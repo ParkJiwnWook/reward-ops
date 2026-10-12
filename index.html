@@ -1,4 +1,18 @@
 <!DOCTYPE html>
+<!--
+REWARD OPS 배포용 index.html
+
+중요:
+아래 JavaScript의
+__PASTE_SUPABASE_PUBLISHABLE_KEY_HERE__
+문자열을 Supabase Publishable Key로 교체한 뒤 GitHub에 업로드하세요.
+
+Project URL은 이미 설정되어 있습니다:
+https://icnudwihiacxadryypat.supabase.co
+
+service_role / secret key / Database Password는 절대 넣지 마세요.
+-->
+
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -202,34 +216,7 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
   resize:vertical;
 }
 
-#supabaseSettingsModal{display:none;}
-#supabaseSettingsModal.show{
-  display:flex;
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:rgba(15,23,42,.5);
-}
-#supabaseSettingsModal .modal-card{
-  background:#fff;
-  border-radius:18px;
-  padding:24px;
-  max-height:90vh;
-  overflow:auto;
-  box-shadow:0 24px 70px rgba(15,23,42,.22);
-}
-#supabaseSettingsModal textarea{
-  width:100%;
-  box-sizing:border-box;
-  border:1px solid #dbe2ea;
-  border-radius:12px;
-  padding:12px 14px;
-  font:inherit;
-  resize:vertical;
-}
+
 
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -243,7 +230,7 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
       <div class="hero-copy">
         <h1>리워드 슬롯 운영을<br>한 화면에서 관리하세요.</h1>
       </div>
-      <div style="color:#94a3b8;font-size:12px;">Prototype v1.0</div>
+      <div style="color:#94a3b8;font-size:12px;"></div>
     </div>
     <div class="login-panel">
       <div class="login-card">
@@ -258,10 +245,7 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
           <input id="loginPw" type="password" placeholder="비밀번호 입력">
         </div>
         <div class="login-actions"><button class="btn btn-primary" onclick="login()">로그인</button></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px;">
-          <button type="button" class="btn ghost small" onclick="openSupabaseSettings()">Supabase 연결 설정</button>
-          <span id="supabaseConnectionStatus" style="font-size:12px;color:#98a2b3;">미설정</span>
-        </div>
+        
       </div>
     </div>
   </section>
@@ -631,61 +615,29 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
   </div>
 
 </div>
-
-
-<div id="supabaseSettingsModal" class="modal">
-  <div class="modal-card" style="width:min(620px,100%);">
-    <button type="button"
-            style="float:right;background:#eef0f4;color:#344054"
-            onclick="closeSupabaseSettings()">닫기</button>
-
-    <h2 style="margin-top:0;">Supabase 연결 설정</h2>
-    <p style="color:#667085;margin-bottom:20px;">
-      Supabase의 Project URL과 Publishable Key를 입력해 주세요.
-    </p>
-
-    <div class="form-group">
-      <label>Project URL</label>
-      <input id="supabaseUrlInput"
-             type="text"
-             placeholder="https://xxxxxxxx.supabase.co">
-    </div>
-
-    <div class="form-group">
-      <label>Publishable Key</label>
-      <textarea id="supabaseKeyInput"
-                rows="5"
-                placeholder="sb_publishable_... 또는 anon public key"></textarea>
-    </div>
-
-    <div style="font-size:12px;color:#667085;line-height:1.7;margin:8px 0 18px;">
-      브라우저용 Publishable Key만 입력하세요.
-      service_role / secret key / Database Password는 입력하지 마세요.
-    </div>
-
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button type="button" class="btn ghost" onclick="testSupabaseConnection()">연결 테스트</button>
-      <button type="button" class="btn btn-primary" onclick="saveSupabaseSettings()">저장</button>
-    </div>
-  </div>
-</div>
-
 <script>
 
 let supabaseClient = null;
 
 function getSupabaseConfig(){
   return {
-    url:(localStorage.getItem('reward_supabase_url')||'').trim(),
-    key:(localStorage.getItem('reward_supabase_publishable_key')||'').trim()
+    url:'https://icnudwihiacxadryypat.supabase.co',
+    key:'__PASTE_SUPABASE_PUBLISHABLE_KEY_HERE__'
   };
 }
 
 function initSupabaseClient(){
   const cfg=getSupabaseConfig();
-  if(!cfg.url || !cfg.key || !window.supabase){
+
+  if(!window.supabase){
     supabaseClient=null;
-    updateSupabaseConnectionStatus();
+    alert('Supabase 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');
+    return false;
+  }
+
+  if(!cfg.url || !cfg.key || cfg.key.includes('__PASTE_SUPABASE_PUBLISHABLE_KEY_HERE__')){
+    supabaseClient=null;
+    alert('배포용 index.html에 Supabase Publishable Key를 먼저 입력해 주세요.');
     return false;
   }
 
@@ -697,80 +649,18 @@ function initSupabaseClient(){
         detectSessionInUrl:true
       }
     });
-    updateSupabaseConnectionStatus();
     return true;
   }catch(err){
     console.error(err);
     supabaseClient=null;
-    updateSupabaseConnectionStatus('설정 오류');
     return false;
   }
 }
 
-function updateSupabaseConnectionStatus(forcedText){
-  const el=document.getElementById('supabaseConnectionStatus');
-  if(!el) return;
-  if(forcedText){
-    el.textContent=forcedText;
-    return;
-  }
-  const cfg=getSupabaseConfig();
-  el.textContent=(cfg.url && cfg.key && supabaseClient)?'연결 설정됨':'미설정';
-  el.style.color=(cfg.url && cfg.key && supabaseClient)?'#16a34a':'#98a2b3';
-}
 
-function openSupabaseSettings(){
-  const cfg=getSupabaseConfig();
-  document.getElementById('supabaseUrlInput').value=cfg.url;
-  document.getElementById('supabaseKeyInput').value=cfg.key;
-  document.getElementById('supabaseSettingsModal').classList.add('show');
-}
 
-function closeSupabaseSettings(){
-  document.getElementById('supabaseSettingsModal').classList.remove('show');
-}
 
-async function testSupabaseConnection(){
-  const url=document.getElementById('supabaseUrlInput').value.trim();
-  const key=document.getElementById('supabaseKeyInput').value.trim();
 
-  if(!url || !key){
-    alert('Project URL과 Publishable Key를 모두 입력해 주세요.');
-    return;
-  }
-
-  try{
-    const testClient=window.supabase.createClient(url,key);
-    const {error}=await testClient.auth.getSession();
-    if(error) throw error;
-    alert('Supabase 연결 정보가 정상입니다.');
-  }catch(err){
-    console.error(err);
-    alert('Supabase 연결에 실패했습니다.\nProject URL과 Publishable Key를 다시 확인해 주세요.');
-  }
-}
-
-function saveSupabaseSettings(){
-  const url=document.getElementById('supabaseUrlInput').value.trim().replace(/\/+$/,'');
-  const key=document.getElementById('supabaseKeyInput').value.trim();
-
-  if(!url || !key){
-    alert('Project URL과 Publishable Key를 모두 입력해 주세요.');
-    return;
-  }
-
-  if(!/^https:\/\/.+\.supabase\.co$/i.test(url)){
-    alert('Project URL 형식을 확인해 주세요.\n예: https://xxxxxxxx.supabase.co');
-    return;
-  }
-
-  localStorage.setItem('reward_supabase_url',url);
-  localStorage.setItem('reward_supabase_publishable_key',key);
-
-  initSupabaseClient();
-  closeSupabaseSettings();
-  alert('Supabase 연결 설정을 저장했습니다.');
-}
 
 async function loadSupabaseProfile(user){
   if(!supabaseClient || !user) return null;
@@ -1078,8 +968,6 @@ async function login(){
   const pw=document.getElementById('loginPw').value;
 
   if(!supabaseClient && !initSupabaseClient()){
-    alert('먼저 Supabase 연결 설정을 완료해 주세요.');
-    openSupabaseSettings();
     return;
   }
 
