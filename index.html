@@ -635,7 +635,7 @@ function initSupabaseClient(){
     return false;
   }
 
-  if(!cfg.url || !cfg.key || cfg.key.includes('sb_publishable_ZNUa9OFm9k63LurS7jVsWg_NW7v2G-6')){
+  if(!cfg.url || !cfg.key){
     supabaseClient=null;
     alert('Supabase 연결 설정을 확인해 주세요.');
     return false;
