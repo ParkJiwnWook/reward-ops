@@ -4,7 +4,7 @@ REWARD OPS 배포용 index.html
 
 중요:
 아래 JavaScript의
-__PASTE_SUPABASE_PUBLISHABLE_KEY_HERE__
+sb_publishable_ZNUa9OFm9k63LurS7jVsWg_NW7v2G-6
 문자열을 Supabase Publishable Key로 교체한 뒤 GitHub에 업로드하세요.
 
 Project URL은 이미 설정되어 있습니다:
@@ -622,7 +622,7 @@ let supabaseClient = null;
 function getSupabaseConfig(){
   return {
     url:'https://icnudwihiacxadryypat.supabase.co',
-    key:'__PASTE_SUPABASE_PUBLISHABLE_KEY_HERE__'
+    key:'sb_publishable_ZNUa9OFm9k63LurS7jVsWg_NW7v2G-6'
   };
 }
 
@@ -635,9 +635,9 @@ function initSupabaseClient(){
     return false;
   }
 
-  if(!cfg.url || !cfg.key || cfg.key.includes('__PASTE_SUPABASE_PUBLISHABLE_KEY_HERE__')){
+  if(!cfg.url || !cfg.key || cfg.key.includes('sb_publishable_ZNUa9OFm9k63LurS7jVsWg_NW7v2G-6')){
     supabaseClient=null;
-    alert('배포용 index.html에 Supabase Publishable Key를 먼저 입력해 주세요.');
+    alert('Supabase 연결 설정을 확인해 주세요.');
     return false;
   }
 
