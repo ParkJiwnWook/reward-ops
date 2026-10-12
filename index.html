@@ -1,0 +1,2443 @@
+<!DOCTYPE html>
+<!--
+REWARD OPS 배포용 index.html
+
+중요:
+아래 JavaScript의
+sb_publishable_ZNUa9OFm9k63LurS7jVsWg_NW7v2G-6
+문자열을 Supabase Publishable Key로 교체한 뒤 GitHub에 업로드하세요.
+
+Project URL은 이미 설정되어 있습니다:
+https://icnudwihiacxadryypat.supabase.co
+
+service_role / secret key / Database Password는 절대 넣지 마세요.
+-->
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reward Admin</title>
+<style>
+:root{
+  --bg:#f5f7fb;
+  --panel:#ffffff;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --primary:#111827;
+  --accent:#4f46e5;
+  --accent2:#eef2ff;
+  --green:#16a34a;
+  --yellow:#d97706;
+  --red:#dc2626;
+  --blue:#2563eb;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,"Noto Sans KR",sans-serif;background:linear-gradient(180deg,#f7f9fc 0%,#f2f5fa 100%);color:var(--text);letter-spacing:-.01em}
+button,input,select,textarea{font:inherit}
+.hidden{display:none!important}
+.app{min-height:100vh}
+.login-wrap{
+  min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;
+  background:linear-gradient(135deg,#111827 0%,#1f2937 50%,#312e81 100%);
+}
+.login-hero{padding:72px;color:#fff;display:flex;flex-direction:column;justify-content:space-between}
+.brand{font-size:26px;font-weight:800;letter-spacing:.5px}
+.hero-copy h1{font-size:54px;line-height:1.12;margin:0 0 22px}
+.hero-copy p{font-size:18px;line-height:1.7;color:#d1d5db;max-width:620px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.hero-badges span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:10px 14px;border-radius:999px;font-size:13px}
+.login-panel{display:flex;align-items:center;justify-content:center;padding:40px}
+.login-card{width:min(470px,100%);background:#fff;border-radius:28px;padding:38px;box-shadow:0 30px 70px rgba(0,0,0,.28)}
+.login-card h2{margin:0 0 8px;font-size:30px}
+.login-card .sub{color:var(--muted);margin-bottom:28px}
+.form-group{margin-bottom:18px}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:8px}
+input,select,textarea{
+  width:100%;border:1px solid #dfe5ec;background:#fff;border-radius:12px;
+  padding:12px 14px;outline:none;transition:.18s ease;color:#243041
+}
+input:focus,select:focus,textarea:focus{border-color:#7c83ff;box-shadow:0 0 0 4px rgba(91,92,240,.10)}
+.btn{
+  border:0;border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer;
+  transition:.18s ease;box-shadow:0 2px 6px rgba(15,23,42,.05)
+}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:var(--primary);color:white}
+.btn-accent{background:linear-gradient(135deg,#5b5cf0,#7475ff);color:white}
+.btn-soft{background:#f7f8fb;color:#425066;border:1px solid var(--line)}
+.btn-danger{background:#fee2e2;color:#991b1b}
+.login-actions{display:flex;gap:10px;margin-top:8px}
+.login-actions .btn{flex:1}
+.shell{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{
+  background:linear-gradient(180deg,#0b1220 0%,#111827 100%);
+  color:white;padding:24px 16px;position:sticky;top:0;height:100vh;
+  border-right:1px solid rgba(255,255,255,.04);
+  box-shadow:12px 0 30px rgba(15,23,42,.08);
+}
+.sidebar .logo{font-size:21px;font-weight:800;margin:4px 10px 26px;letter-spacing:.08em}
+.profile{
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:15px;margin-bottom:22px
+}
+.profile .name{font-weight:700}.profile .role{font-size:12px;color:#94a3b8;margin-top:4px}
+.sidebar{display:flex;flex-direction:column}
+.nav{display:flex;flex-direction:column;flex:1}
+.sidebar-account{
+  margin-top:auto;
+  padding:14px 12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  color:#cbd5e1;
+}
+.sidebar-account .account-label{
+  font-size:10px;
+  color:#64748b;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.sidebar-account .account-id{
+  font-size:14px;
+  font-weight:800;
+  color:#fff;
+  word-break:break-all;
+}
+.sidebar-account .account-role{
+  margin-top:4px;
+  font-size:11px;
+  color:#94a3b8;
+}
+
+.nav-title{font-size:11px;color:#64748b;margin:18px 10px 8px;font-weight:700}
+.nav button{
+  width:100%;border:0;background:transparent;color:#cbd5e1;text-align:left;padding:11px 12px;
+  border-radius:10px;cursor:pointer;margin:2px 0
+}
+.nav button:hover,.nav button.active{background:linear-gradient(90deg,#1a2740,#202d48);color:#fff;box-shadow:inset 3px 0 0 #818cf8}
+.main{padding:30px 34px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+.topbar h1{font-size:28px;margin:0;font-weight:800;letter-spacing:-.03em}.top-actions{display:flex;gap:10px}
+.card{background:rgba(255,255,255,.97);border:1px solid rgba(226,232,240,.92);border-radius:18px;box-shadow:0 10px 30px rgba(15,23,42,.06);backdrop-filter:blur(8px)}
+.stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.stat{padding:22px;position:relative;overflow:hidden}.stat:after{content:"";position:absolute;right:-18px;top:-18px;width:72px;height:72px;border-radius:50%;background:rgba(91,92,240,.06)}.stat .label{font-size:12px;color:var(--muted);margin-bottom:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}.stat .value{font-size:32px;font-weight:800;letter-spacing:-.03em}
+.content-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:18px}
+.content-grid.customer-view{grid-template-columns:minmax(0,1fr)}
+.section-head{display:flex;align-items:center;justify-content:space-between;padding:19px 22px;border-bottom:1px solid var(--line)}
+.section-head h3{margin:0;font-size:15px;font-weight:800}
+.table-wrap{overflow:auto} tbody tr{transition:.15s ease} tbody tr:hover{background:#fafbff}
+table{width:100%;border-collapse:separate;border-spacing:0}
+th,td{padding:14px 15px;border-bottom:1px solid #edf1f5;font-size:13px;text-align:left;white-space:nowrap;vertical-align:middle}
+th{background:#f8fafc;color:#667085;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.status{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.01em}
+.s-running{background:#dcfce7;color:#166534}
+.s-wait{background:#fef3c7;color:#92400e}
+.s-ending{background:#ffedd5;color:#9a3412}
+.s-end{background:#e5e7eb;color:#4b5563}
+.s-stop{background:#fee2e2;color:#991b1b}
+.dot{width:7px;height:7px;border-radius:999px;background:currentColor}
+.mini-list{padding:8px 18px 18px}
+.mini-item{padding:13px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}
+.mini-item:last-child{border-bottom:0}
+.mini-item .t{font-size:13px;font-weight:700}.mini-item .s{font-size:12px;color:var(--muted);margin-top:3px}
+.page{display:none}.page.active{display:block}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.toolbar input,.toolbar select{width:auto;min-width:150px}
+.form-card{padding:24px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.form-grid .full{grid-column:1/-1}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.tag-wrap{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.tag{background:var(--accent2);color:#3730a3;padding:7px 10px;border-radius:999px;font-size:12px}
+.row-actions{display:flex;gap:6px}
+.row-actions button{padding:7px 9px;border-radius:9px;border:1px solid var(--line);background:white;cursor:pointer;font-size:12px}
+.row-actions .delete-btn{border-color:#fecaca;background:#fff1f2;color:#b91c1c;font-weight:700}
+.member-badge{font-size:12px;padding:5px 8px;border-radius:8px;background:#f3f4f6}
+.expiring-date{color:#dc2626;font-weight:800;background:#fef2f2;padding:5px 8px;border-radius:8px;display:inline-block}
+.d2-date{color:#d97706;font-weight:800;background:#fffbeb;padding:5px 8px;border-radius:8px;display:inline-block}
+.approval-wait{background:#e0e7ff;color:#3730a3}
+.slot-type-badge{display:inline-block;padding:5px 8px;border-radius:8px;background:#eef2ff;color:#4338ca;font-size:12px;font-weight:700}
+input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allowed}
+.notice{padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,#f1f3ff,#f7f8ff);color:#4546b9;font-size:13px;margin-bottom:16px;border:1px solid #e3e6ff}
+.modal{
+  position:fixed;inset:0;background:rgba(15,23,42,.46);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50
+}
+.modal-card{background:white;width:min(760px,100%);border-radius:18px;padding:26px;max-height:92vh;overflow:auto}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-head h3{margin:0}.close{border:0;background:#f3f4f6;width:34px;height:34px;border-radius:10px;cursor:pointer}
+@media(max-width:1100px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .content-grid{grid-template-columns:1fr}
+}
+@media(max-width:800px){
+  .login-wrap{grid-template-columns:1fr}.login-hero{display:none}
+  .shell{grid-template-columns:1fr}.sidebar{position:relative;height:auto}
+  .stat-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}
+}
+.edit-locked{display:inline-block;color:#98a2b3;font-size:12px;font-weight:700;padding:7px 9px;background:#f3f4f6;border-radius:9px;white-space:nowrap}
+
+.table-media-select{
+  width:66px;
+  min-width:66px;
+  height:34px;
+  padding:0 18px 0 8px;
+  text-align:center;
+  text-align-last:center;
+  margin:0 auto;
+  display:block;
+  border:1px solid #d9deea;
+  border-radius:9px;
+  background:#fff;
+  font-size:12px;
+  color:#273142;
+  box-sizing:border-box;
+}
+.table-media-select:disabled{
+  background:#f5f7fb;
+  color:#667085;
+  opacity:1;
+  cursor:not-allowed;
+}
+
+
+#supabaseSettingsModal textarea{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid #dbe2ea;
+  border-radius:12px;
+  padding:12px 14px;
+  font:inherit;
+  resize:vertical;
+}
+
+
+
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="app">
+
+  <section id="loginScreen" class="login-wrap">
+    <div class="login-hero">
+      <div class="brand">REWARD OPS</div>
+      <div class="hero-copy">
+        <h1>리워드 슬롯 운영을<br>한 화면에서 관리하세요.</h1>
+      </div>
+      <div style="color:#94a3b8;font-size:12px;"></div>
+    </div>
+    <div class="login-panel">
+      <div class="login-card">
+        <h2>로그인</h2>
+        <div class="sub">계정 정보를 입력해 주세요.</div>
+        <div class="form-group">
+          <label>ID / EMAIL</label>
+          <input id="loginId" placeholder="아이디 또는 이메일 입력" autocomplete="username">
+        </div>
+<div class="form-group">
+          <label>PASSWORD</label>
+          <input id="loginPw" type="password" placeholder="비밀번호 입력">
+        </div>
+        <div class="login-actions"><button class="btn btn-primary" onclick="login()">로그인</button></div>
+        
+      </div>
+    </div>
+  </section>
+
+  <section id="mainScreen" class="shell hidden">
+    <aside class="sidebar">
+      <div class="logo">REWARD OPS<div style="font-size:10px;font-weight:600;letter-spacing:.12em;color:#718096;margin-top:6px;">OPERATIONS CONSOLE</div></div>
+      <div class="profile">
+        <div class="name" id="profileName">관리자</div>
+        <div class="role" id="profileRole">ADMIN</div>
+      </div>
+
+      <div class="nav">
+        <div class="nav-title">OVERVIEW</div>
+        <button class="active" data-page="dashboard" onclick="showPage('dashboard',this)">대시보드</button>
+
+        <div class="nav-title">SLOT</div>
+        <button data-page="slots" onclick="showPage('slots',this)">전체 슬롯</button>
+        <button data-page="register" onclick="showPage('register',this)">슬롯 등록</button>
+
+        <div class="nav-title">MEMBER</div>
+        <button data-page="members" onclick="showPage('members',this)">회원 관리</button>
+        
+
+        <div class="nav-title">SYSTEM</div>
+        <button class="admin-only" data-page="audit" onclick="showPage('audit',this)">수정 이력</button>
+        <button data-page="notice" onclick="showPage('notice',this)">공지사항</button>
+
+        <div class="sidebar-account">
+          <div class="account-label">Logged in as</div>
+          <div class="account-id" id="sidebarLoginId">-</div>
+          <div class="account-role" id="sidebarLoginRole">-</div>
+        </div>
+
+        <button onclick="logout()" style="margin-top:10px">로그아웃</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div><h1 id="pageTitle">대시보드</h1><div id="pageSubtitle" style="font-size:12px;color:#8a96a8;margin-top:6px;">운영 현황을 한눈에 확인하세요.</div></div>
+        <div class="top-actions">
+          <button class="btn btn-accent" onclick="showPage('register')">+ 슬롯 등록</button>
+        </div>
+      </div>
+
+      <section id="dashboard" class="page active">
+        <div class="stat-grid">
+          <div class="card stat"><div class="label">전체 슬롯</div><div class="value" id="statAll">128</div></div>
+          <div class="card stat"><div class="label">구동중</div><div class="value" id="statRunning">93</div></div>
+          <div class="card stat"><div class="label">시작 예정</div><div class="value" id="statWait">18</div></div>
+          <div class="card stat"><div class="label">종료 예정</div><div class="value" id="statEnding">12</div></div>
+          <div class="card stat"><div class="label">종료</div><div class="value" id="statEnd">5</div></div>
+        </div>
+
+        <div class="content-grid" id="dashboardContentGrid">
+          <div class="card">
+            <div class="section-head"><h3>최근 등록 슬롯</h3><button class="btn btn-soft" onclick="showPage('slots')">전체보기</button></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>상태</th><th>쇼핑몰</th><th>메인 키워드</th><th>시작일</th><th>종료일</th><th>관리</th></tr></thead>
+                <tbody id="dashboardSlotRows"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card admin-only" id="adminTodayChecklist">
+            <div class="section-head"><h3>오늘 확인할 항목</h3></div>
+            <div class="mini-list">
+              <div class="mini-item"><div><div class="t">오늘 시작 예정</div><div class="s">구동 전 최종 확인 필요</div></div><strong>7</strong></div>
+              <div class="mini-item"><div><div class="t">오늘 종료 예정</div><div class="s">연장 여부 확인 필요</div></div><strong>9</strong></div>
+              <div class="mini-item"><div><div class="t">승인 대기 회원</div><div class="s">가입 승인 필요</div></div><strong>3</strong></div>
+              <div class="mini-item"><div><div class="t">수정 요청</div><div class="s">상품/키워드 변경 요청</div></div><strong>4</strong></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="slots" class="page">
+        <div class="notice" id="slotScopeNotice">현재 계정 권한에 따라 조회 가능한 슬롯만 표시됩니다.</div>
+
+        <div class="toolbar">
+          <input id="searchMall" placeholder="쇼핑몰명">
+          <input id="searchKeyword" placeholder="키워드 검색">
+          <select id="searchStatus">
+            <option value="">전체 상태</option>
+            <option>구동중</option><option>시작예정</option><option>종료예정</option><option>종료</option><option>중지</option>
+          </select>
+          <button class="btn btn-primary" onclick="renderSlots()">검색</button>
+        </div>
+        <div class="card">
+          <div class="section-head"><h3>슬롯 목록</h3><span style="font-size:13px;color:#6b7280" id="slotCount"></span></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>승인</th><th>상태</th><th>쇼핑몰</th><th>상품링크</th><th>원부링크</th><th>메인 키워드</th><th>40위 이내 키워드</th><th>15위 이내 키워드</th><th>매체사</th><th>진행유형</th><th>수량</th><th>시작일</th><th>종료일</th><th>등록자</th><th>관리</th></tr>
+              </thead>
+              <tbody id="slotRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="register" class="page">
+        <div class="notice">
+          구동 시작일은 <strong>내일부터 선택 가능</strong>하며, 선택한 진행 유형에 따라 종료일이 자동 계산됩니다.
+        </div>
+        <div class="card form-card">
+          <div class="form-grid">
+            <div>
+              <label>쇼핑몰 이름</label>
+              <input id="regMall" placeholder="쇼핑몰 이름을 입력하세요">
+            </div>
+            <div>
+              <label>상품 링크</label>
+              <input id="regLink"
+                     placeholder="https://smartstore.naver.com/스토어명/products/상품번호"
+                     pattern="https://smartstore\.naver\.com/[^/?#]+/products/[0-9]+"
+                     title="https://smartstore.naver.com/스토어명/products/상품번호 형식으로 입력해 주세요.">
+            </div>
+            <div>
+              <label>원부링크</label>
+              <input id="regOriginalLink"
+                     placeholder="https://search.shopping.naver.com/catalog/00000/"
+                     title="https://search.shopping.naver.com/catalog/숫자/ 형식으로 입력해 주세요.">
+            </div>
+            <div class="full">
+              <label>메인 키워드</label>
+              <input id="regKeywords" placeholder="메인 키워드를 입력하세요" required minlength="1">
+            </div>
+            <div class="full">
+              <label>40위 이내 키워드</label>
+              <input id="regKeyword40" placeholder="키워드를 입력하세요" required minlength="1">
+            </div>
+            <div class="full">
+              <label>15위 이내 키워드</label>
+              <input id="regKeyword15" placeholder="키워드를 입력하세요" required minlength="1">
+            </div>
+            <div id="regPlanTypeWrap" class="admin-only">
+              <label>진행 유형</label>
+              <select id="regPlanType" onchange="calcEnd()">
+                <option value="FREE TEST">FREE TEST</option>
+                <option value="STANDARD">STANDARD</option>
+              </select>
+            </div>
+            <div>
+              <label>수량</label>
+              <input id="regQty" type="number" value="100" min="1" step="100">
+            </div>
+            <div id="regAccountWrap">
+              <label>등록 계정</label>
+              <select id="regAccount">
+                <option value="">계정을 선택하세요</option>
+              </select>
+              <div style="font-size:12px;color:#6b7280;margin-top:7px;">
+                선택한 계정이 직접 슬롯을 등록한 것처럼 저장됩니다.
+              </div>
+            </div>
+            <div>
+              <label>구동 시작일</label>
+              <input id="regStart" type="date" onchange="calcEnd()">
+            </div>
+            <div class="full">
+              <div id="periodPreview" style="display:none;background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:14px 16px;font-size:14px;">
+                <strong>구동 기간</strong>
+                <span id="periodText" style="margin-left:10px;color:#4f46e5;font-weight:700;"></span>
+              </div>
+            </div>
+            <div class="full">
+              <label>메모</label>
+              <textarea id="regMemo" rows="4" placeholder="운영 메모를 입력하세요."></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-soft" onclick="resetRegister()">초기화</button>
+            <button class="btn btn-accent" onclick="addSlot()">슬롯 등록</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="members" class="page">
+        <div class="notice" id="memberScopeNotice">현재 계정 권한에 따라 조회 가능한 회원만 표시됩니다.</div>
+        <div class="toolbar">
+          <input id="memberSearch" placeholder="아이디 검색">
+          <select id="memberRoleFilter">
+            <option value="">전체 권한</option>
+            <option>총판</option><option>대행사</option><option>셀러</option>
+          </select>
+          <button class="btn btn-primary" onclick="renderMembers()">검색</button>
+          <button id="memberSignupBtn" class="btn btn-accent" onclick="openMemberSignup()">+ 회원가입하기</button>
+        </div>
+        <div class="card">
+          <div class="section-head"><h3>회원 목록</h3><span style="font-size:13px;color:#6b7280" id="memberCount"></span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>아이디</th><th>비밀번호</th><th>가입유형</th><th>생성 계정</th><th>상태</th><th>관리</th></tr></thead>
+              <tbody id="memberRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="audit" class="page admin-only">
+        <div class="card">
+          <div class="section-head"><h3>수정 이력</h3><span style="font-size:13px;color:#6b7280" id="auditCount"></span></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>일시</th><th>계정</th><th>작업</th><th>대상</th><th>내용</th></tr></thead>
+            <tbody id="auditRows"></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section id="notice" class="page">
+        <div class="card form-card">
+          <h3 style="margin-top:0">공지사항</h3>
+          <div class="notice" style="margin-bottom:0;">
+            <div style="font-weight:800;font-size:16px;margin-bottom:10px;color:#2f318f;">전산 오픈시간 안내</div>
+            <div style="line-height:1.8;color:#374151;">
+              <strong>접수 가능 시간은 한국시간 기준 평일 00:00:00~17:00:00, 주말 00:00:00~11:00:00입니다. 마감 이후에는 관리자만 슬롯 등록/수정/환불이 가능합니다.</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <div id="memberSignupModal" class="modal hidden">
+    <div class="modal-card" style="width:min(620px,100%);">
+      <div class="modal-head">
+        <h3>회원가입하기</h3>
+        <button class="close" onclick="closeMemberSignup()">×</button>
+      </div>
+      <div class="form-grid">
+        <div>
+          <label>아이디</label>
+          <input id="newMemberId" placeholder="로그인 아이디">
+        </div>
+        <div>
+          <label>비밀번호</label>
+          <input id="newMemberPw" type="text" placeholder="초기 비밀번호">
+        </div>
+        <div class="full">
+          <label>가입 유형</label>
+          <select id="newMemberRole"></select>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-soft" onclick="closeMemberSignup()">취소</button>
+        <button class="btn btn-accent" onclick="createMemberByCurrentUser()">회원 생성</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="memberEditModal" class="modal hidden">
+    <div class="modal-card" style="width:min(620px,100%);">
+      <div class="modal-head">
+        <h3>회원 정보 수정</h3>
+        <button class="close" onclick="closeMemberEdit()">×</button>
+      </div>
+      <input type="hidden" id="memberEditOriginalId">
+      <div class="form-grid">
+        <div>
+          <label>아이디</label>
+          <input id="memberEditId">
+        </div>
+        <div>
+          <label>비밀번호</label>
+          <input id="memberEditPw" type="text">
+        </div>
+        <div>
+          <label>가입 유형</label>
+          <select id="memberEditRole">
+            <option>총판</option>
+            <option>대행사</option>
+            <option>셀러</option>
+          </select>
+        </div>
+        <div>
+          <label>상태</label>
+          <select id="memberEditStatus">
+            <option>정상</option>
+            <option>정지</option>
+          </select>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-soft" onclick="closeMemberEdit()">취소</button>
+        <button class="btn btn-accent" onclick="saveMemberEdit()">수정 저장</button>
+      </div>
+    </div>
+  </div>
+  <div id="editModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>슬롯 수정</h3>
+        <button class="close" onclick="closeEdit()">×</button>
+      </div>
+      <input type="hidden" id="editId">
+      <div class="form-grid">
+        <div>
+          <label>쇼핑몰 이름</label>
+          <input id="editMall">
+        </div>
+        <div>
+          <label>상품 링크</label>
+          <input id="editLink"
+                 placeholder="https://smartstore.naver.com/스토어명/products/상품번호"
+                 pattern="https://smartstore\.naver\.com/[^/?#]+/products/[0-9]+"
+                 title="https://smartstore.naver.com/스토어명/products/상품번호 형식으로 입력해 주세요.">
+        </div>
+        <div>
+          <label>원부링크</label>
+          <input id="editOriginalLink"
+                 placeholder="https://search.shopping.naver.com/catalog/00000/"
+                 title="https://search.shopping.naver.com/catalog/숫자/ 형식으로 입력해 주세요.">
+        </div>
+        <div class="full">
+          <label>메인 키워드</label>
+          <input id="editKeywords" required minlength="1">
+        </div>
+        <div class="full">
+          <label>40위 이내 키워드</label>
+          <input id="editKeyword40" placeholder="키워드를 입력하세요" required minlength="1">
+        </div>
+        <div class="full">
+          <label>15위 이내 키워드</label>
+          <input id="editKeyword15" placeholder="키워드를 입력하세요" required minlength="1">
+        </div>
+        <div>
+          <label>진행 유형</label>
+          <select id="editPlanType" disabled><option value="FREE TEST">FREE TEST</option><option value="STANDARD">STANDARD</option></select>
+        </div>
+        <div>
+          <label>승인 상태</label>
+          <select id="editApproval" disabled><option>승인대기</option><option>승인완료</option><option>반려</option></select>
+        </div>
+        <div>
+          <label>수량</label>
+          <input id="editQty" type="number" min="1" disabled>
+        </div>
+        <div>
+          <label>구동 시작일</label>
+          <input id="editStart" type="date" disabled>
+        </div>
+        <div>
+          <label>구동 종료일</label>
+          <input id="editEnd" type="date" disabled>
+        </div>
+        <div>
+          <label>상태</label>
+          <input id="editStatus" disabled>
+        </div>
+        <div>
+          <label>등록자</label>
+          <input id="editOwner" disabled>
+        </div>
+      </div>
+
+      <div id="editPermissionNote" style="margin-top:14px;padding:12px 14px;border-radius:12px;background:#f8fafc;color:#6b7280;font-size:12px;">
+        등록된 슬롯은 관리자 계정에서만 수정할 수 있습니다.
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-soft" onclick="closeEdit()">취소</button>
+        <button class="btn btn-accent" onclick="saveEdit()">수정 저장</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+
+let supabaseClient = null;
+
+function getSupabaseConfig(){
+  return {
+    url:'https://icnudwihiacxadryypat.supabase.co',
+    key:'sb_publishable_ZNUa9OFm9k63LurS7jVsWg_NW7v2G-6'
+  };
+}
+
+function initSupabaseClient(){
+  const cfg=getSupabaseConfig();
+
+  if(!window.supabase){
+    supabaseClient=null;
+    alert('Supabase 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');
+    return false;
+  }
+
+  if(!cfg.url || !cfg.key){
+    supabaseClient=null;
+    alert('Supabase 연결 설정을 확인해 주세요.');
+    return false;
+  }
+
+  try{
+    supabaseClient=window.supabase.createClient(cfg.url,cfg.key,{
+      auth:{
+        persistSession:true,
+        autoRefreshToken:true,
+        detectSessionInUrl:true
+      }
+    });
+    return true;
+  }catch(err){
+    console.error(err);
+    supabaseClient=null;
+    return false;
+  }
+}
+
+
+
+
+
+
+async function loadSupabaseProfile(user){
+  if(!supabaseClient || !user) return null;
+
+  const {data,error}=await supabaseClient
+    .from('profiles')
+    .select('id, username, role, is_active, created_by')
+    .eq('id',user.id)
+    .single();
+
+  if(error){
+    console.error('profile load error',error);
+    throw new Error('회원 프로필을 불러오지 못했습니다.');
+  }
+
+  if(!data?.is_active){
+    throw new Error('비활성화된 계정입니다.');
+  }
+
+  return data;
+}
+
+
+function profileUuidByUsername(username){
+  if(!username) return null;
+  if(currentUser?.id===username) return currentUser.uuid || null;
+  return members.find(m=>m.id===username)?.uuid || null;
+}
+
+function slotFromDb(row, usernameByUuid){
+  return {
+    id:row.id,
+    status:row.status || '시작예정',
+    approval:row.approval_status || '승인대기',
+    planType:row.plan_type || 'STANDARD',
+    mall:row.mall_name || '',
+    link:row.product_link || '',
+    originalLink:row.original_link || '',
+    keywords:row.main_keyword || '',
+    keyword40:row.keyword_40 || '',
+    keyword15:row.keyword_15 || '',
+    mediaCompany:row.media_company || '',
+    qty:Number(row.quantity || 0),
+    start:row.start_date || '',
+    end:row.end_date || '',
+    owner:usernameByUuid.get(row.owner_user_id) || row.owner_user_id,
+    ownerUuid:row.owner_user_id,
+    ownerRole:'',
+    memo:row.memo || ''
+  };
+}
+
+async function loadSupabaseOperationalData(){
+  if(!supabaseClient || !currentUser?.uuid) return;
+
+  const {data:profilesData,error:profilesError}=await supabaseClient
+    .from('profiles')
+    .select('id, username, role, is_active, created_by, created_at')
+    .order('created_at',{ascending:true});
+
+  if(profilesError) throw profilesError;
+
+  const profiles=(profilesData||[]).filter(p=>p.is_active!==false);
+  const usernameByUuid=new Map(profiles.map(p=>[p.id,p.username]));
+  const roleByUuid=new Map(profiles.map(p=>[p.id,p.role]));
+
+  members=profiles
+    .filter(p=>p.id!==currentUser.uuid)
+    .map(p=>({
+      uuid:p.id,
+      id:p.username,
+      pw:'',
+      role:p.role,
+      status:p.is_active===false?'중지':'정상',
+      createdBy:p.created_by ? (usernameByUuid.get(p.created_by)||'') : '',
+      createdByUuid:p.created_by||null,
+      createdByRole:p.created_by ? (roleByUuid.get(p.created_by)||'') : ''
+    }));
+
+  const {data:slotsData,error:slotsError}=await supabaseClient
+    .from('slots')
+    .select('*')
+    .order('created_at',{ascending:false});
+
+  if(slotsError) throw slotsError;
+
+  slots=(slotsData||[]).map(row=>{
+    const s=slotFromDb(row,usernameByUuid);
+    s.ownerRole=roleByUuid.get(row.owner_user_id)||'';
+    return s;
+  });
+}
+
+async function reloadSupabaseSlots(){
+  if(!supabaseClient) return;
+  const usernameByUuid=new Map();
+  usernameByUuid.set(currentUser.uuid,currentUser.id);
+  members.forEach(m=>{ if(m.uuid) usernameByUuid.set(m.uuid,m.id); });
+
+  const {data,error}=await supabaseClient
+    .from('slots')
+    .select('*')
+    .order('created_at',{ascending:false});
+
+  if(error) throw error;
+
+  slots=(data||[]).map(row=>{
+    const s=slotFromDb(row,usernameByUuid);
+    if(row.owner_user_id===currentUser.uuid) s.ownerRole=currentUser.role;
+    else s.ownerRole=members.find(m=>m.uuid===row.owner_user_id)?.role||'';
+    return s;
+  });
+}
+
+
+async function callMemberAdminFunction(action,payload={}){
+  if(!supabaseClient) throw new Error('Supabase 연결이 필요합니다.');
+
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  if(!session?.access_token) throw new Error('로그인 세션이 없습니다.');
+
+  const cfg=getSupabaseConfig();
+  const response=await fetch(`${cfg.url}/functions/v1/manage-member`,{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':`Bearer ${session.access_token}`,
+      'apikey':cfg.key
+    },
+    body:JSON.stringify({action,...payload})
+  });
+
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok || result?.error){
+    throw new Error(result?.error || `회원 처리 실패 (${response.status})`);
+  }
+  return result;
+}
+
+async function reloadSupabaseMembers(){
+  const {data:profilesData,error}=await supabaseClient
+    .from('profiles')
+    .select('id, username, role, is_active, created_by, created_at')
+    .order('created_at',{ascending:true});
+
+  if(error) throw error;
+
+  const profiles=profilesData||[];
+  const usernameByUuid=new Map(profiles.map(p=>[p.id,p.username]));
+  const roleByUuid=new Map(profiles.map(p=>[p.id,p.role]));
+
+  members=profiles
+    .filter(p=>p.id!==currentUser.uuid)
+    .map(p=>({
+      uuid:p.id,
+      id:p.username,
+      pw:'',
+      role:p.role,
+      status:p.is_active===false?'정지':'정상',
+      createdBy:p.created_by ? (usernameByUuid.get(p.created_by)||'') : '',
+      createdByUuid:p.created_by||null,
+      createdByRole:p.created_by ? (roleByUuid.get(p.created_by)||'') : ''
+    }));
+}
+
+function friendlySupabaseError(error){
+  const msg=String(error?.message||error||'');
+  if(msg.includes('row-level security') || msg.includes('violates row-level security')){
+    return '현재 계정 권한 또는 전산 접수시간 때문에 처리할 수 없습니다.';
+  }
+  if(msg.includes('duplicate key')){
+    return '이미 등록된 데이터입니다.';
+  }
+  return msg || '처리 중 오류가 발생했습니다.';
+}
+
+async function enterMainScreenFromSupabaseUser(user){
+  const profile=await loadSupabaseProfile(user);
+
+  currentUser={
+    id:profile.username,
+    uuid:profile.id,
+    name:profile.username,
+    company:profile.username,
+    email:user.email||'',
+    role:profile.role,
+    createdBy:profile.created_by||null
+  };
+
+  await loadSupabaseOperationalData();
+
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('mainScreen').classList.remove('hidden');
+  document.getElementById('profileName').textContent=currentUser.company || currentUser.name;
+  document.getElementById('profileRole').textContent=currentUser.role;
+
+  const sidebarLoginId=document.getElementById('sidebarLoginId');
+  const sidebarLoginRole=document.getElementById('sidebarLoginRole');
+  if(sidebarLoginId) sidebarLoginId.textContent=currentUser.id || '-';
+  if(sidebarLoginRole) sidebarLoginRole.textContent=currentUser.role || '-';
+
+  document.querySelectorAll('.admin-only').forEach(el=>{
+    el.style.display = currentUser.role==='관리자' ? '' : 'none';
+  });
+
+  const dashboardGrid=document.getElementById('dashboardContentGrid');
+  if(dashboardGrid){
+    dashboardGrid.classList.toggle('customer-view',currentUser.role!=='관리자');
+  }
+
+  const signupBtn=document.getElementById('memberSignupBtn');
+  if(signupBtn){
+    signupBtn.style.display = currentUser.role==='셀러' ? 'none' : '';
+  }
+
+  setMinStartDate();
+  populateRegisterAccountSelect();
+  applyPlanTypePermission();
+  renderSlots();
+  renderMembers();
+  renderDashboard();
+  if(currentUser.role==='관리자'){
+    renderAudit();
+  }
+  applyRoleView();
+  showPage('dashboard', document.querySelector('.nav button[data-page="dashboard"]'));
+}
+
+async function restoreSupabaseSession(){
+  if(!initSupabaseClient()) return;
+
+  try{
+    const {data,error}=await supabaseClient.auth.getSession();
+    if(error) throw error;
+    if(data?.session?.user){
+      await enterMainScreenFromSupabaseUser(data.session.user);
+    }
+  }catch(err){
+    console.error(err);
+  }
+}
+
+const accounts = {
+  admin:{pw:'1234',name:'관리자',company:'운영본사',email:'admin@reward.local',role:'관리자'},
+  master:{pw:'1234',name:'퍼스트총판',company:'퍼스트총판',email:'master@reward.local',role:'총판'},
+  agency:{pw:'1234',name:'A마케팅',company:'A마케팅',email:'agency@reward.local',role:'대행사'},
+  seller:{pw:'1234',name:'ABC스토어',company:'ABC스토어',email:'seller@reward.local',role:'셀러'}
+};
+
+let currentUser = null;
+
+let slots = JSON.parse(localStorage.getItem('reward_slots') || 'null') || [
+  {id:1,status:'구동중',mall:'ABC몰',link:'https://smartstore.naver.com/example1',keywords:'음식물처리기, 가정용 음식물처리기',type:'크림',qty:300,start:'2026-09-25',end:'2026-10-04',owner:'A마케팅',ownerRole:'대행사'},
+  {id:2,status:'시작예정',mall:'DEF몰',link:'https://smartstore.naver.com/example2',keywords:'식기건조대',type:'레드',qty:200,start:'2026-09-30',end:'2026-10-09',owner:'B대행사',ownerRole:'대행사'},
+  {id:3,status:'종료예정',mall:'GHI몰',link:'https://smartstore.naver.com/example3',keywords:'차량용 방향제',type:'플로어',qty:100,start:'2026-09-20',end:'2026-09-29',owner:'ABC스토어',ownerRole:'셀러'},
+  {id:4,status:'구동중',mall:'JK스토어',link:'https://smartstore.naver.com/example4',keywords:'임산부 철분제',type:'크림',qty:400,start:'2026-09-24',end:'2026-10-03',owner:'퍼스트총판',ownerRole:'총판'}
+];
+slots = slots.map(s => ({
+  ...s,
+  ownerRole: s.ownerRole || (s.owner==='퍼스트총판' ? '총판' : s.owner==='A마케팅' || s.owner==='B대행사' ? '대행사' : s.owner==='ABC스토어' ? '셀러' : '셀러'),
+  planType: s.planType || 'STANDARD',
+  approval: s.approval || '승인완료',
+  originalLink: s.originalLink || ''
+}));
+
+
+
+// v40 수량 기준 전환: 기존 '슬롯 개수' 값을 '유입 수량'으로 1회 변환합니다.
+// 예: 18 -> 1800. 이후 저장된 값은 그대로 유지됩니다.
+if(localStorage.getItem('reward_qty_unit_v40')!=='done'){
+  slots = slots.map(s=>{
+    const q=Number(s.qty);
+    return {...s, qty:(Number.isFinite(q) && q>0 ? q*100 : 100)};
+  });
+  localStorage.setItem('reward_qty_unit_v40','done');
+}
+
+
+slots = slots.map(s=>({...s, mediaCompany:s.mediaCompany||''}));
+
+let members = JSON.parse(localStorage.getItem('reward_members') || 'null') || [
+  {id:'master',pw:'1234',role:'총판',status:'정상',createdBy:'admin',createdByRole:'관리자'},
+  {id:'agency',pw:'1234',role:'대행사',status:'정상',createdBy:'master',createdByRole:'총판'},
+  {id:'seller',pw:'1234',role:'셀러',status:'정상',createdBy:'agency',createdByRole:'대행사'}
+];
+
+// 이전 버전 데이터가 남아 있어도 새 구조로 자동 보정
+members = members.map(m => ({
+  id: m.id || '',
+  pw: m.pw || '1234',
+  role: m.role || '셀러',
+  status: m.status || '정상',
+  createdBy: m.createdBy || 'admin',
+  createdByRole: m.createdByRole || '관리자'
+}));
+let auditLogs = [];
+
+function persist(){
+  localStorage.setItem('reward_audit_logs', JSON.stringify(auditLogs));
+}
+
+async function login(){
+  const loginValue=document.getElementById('loginId').value.trim();
+  const email=loginValue.includes('@') ? loginValue : `${loginValue}@rewardops.local`;
+  const pw=document.getElementById('loginPw').value;
+
+  if(!supabaseClient && !initSupabaseClient()){
+    return;
+  }
+
+  if(!loginValue || !pw){
+    alert('아이디(또는 이메일)와 비밀번호를 입력해 주세요.');
+    return;
+  }
+
+  try{
+    const {data,error}=await supabaseClient.auth.signInWithPassword({
+      email,
+      password:pw
+    });
+
+    if(error) throw error;
+    if(!data?.user) throw new Error('로그인 사용자 정보를 확인할 수 없습니다.');
+
+    await enterMainScreenFromSupabaseUser(data.user);
+  }catch(err){
+    console.error(err);
+    const msg=String(err?.message||'');
+    if(msg.toLowerCase().includes('invalid login credentials')){
+      alert('아이디(또는 이메일) 또는 비밀번호를 확인해 주세요.');
+    }else{
+      alert(msg || '로그인 중 오류가 발생했습니다.');
+    }
+  }
+}
+
+async function logout(){
+  try{
+    if(supabaseClient) await supabaseClient.auth.signOut();
+  }catch(err){
+    console.error(err);
+  }
+  currentUser=null;
+  document.getElementById('mainScreen').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  showPage('dashboard', document.querySelector('.nav button[data-page="dashboard"]'));
+}
+
+function showPage(id,btn){
+  // 관리자 외 계정은 마감 이후 어떤 경로로도 슬롯 등록 화면에 진입할 수 없습니다.
+  if(id==='register' && currentUser?.role!=='관리자' && !getBusinessHoursStatus().isOpen){
+    alert(businessHoursMessage());
+    return;
+  }
+  setTimeout(applyBusinessHoursUI,0);
+  setTimeout(configureMediaCompany,0);
+  setTimeout(hideSellerOwnerHelp,0);
+  setTimeout(configureRegistrationOwner,0);
+  setTimeout(configureQtyInput,0);
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='register'){ populateRegisterAccountSelect(); applyPlanTypePermission(); }
+  if(id==='audit') renderAudit();
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  const titleMap={dashboard:'대시보드',slots:'슬롯 관리',register:'슬롯 등록',members:'회원 관리',audit:'수정 이력',notice:'공지사항'};
+  document.getElementById('pageTitle').textContent=titleMap[id]||'';
+  const subtitleMap={
+    dashboard:'운영 현황을 한눈에 확인하세요.',
+    slots:'등록된 슬롯과 구동 상태를 관리하세요.',
+    register:'새로운 슬롯을 빠르게 등록하세요.',
+    members:'권한별 회원 계정을 관리하세요.',
+    audit:'변경 이력을 확인하세요.',
+    notice:'운영 공지사항을 확인하세요.'
+  };
+  const sub=document.getElementById('pageSubtitle');
+  if(sub) sub.textContent=subtitleMap[id]||'';
+  if(btn) btn.classList.add('active');
+}
+
+
+function isEndDateUrgent(endDate){
+  if(!endDate) return false;
+  const today=new Date();
+  today.setHours(0,0,0,0);
+
+  const end=new Date(endDate+'T00:00:00');
+  const diff=Math.round((end-today)/(1000*60*60*24));
+
+  return diff===0 || diff===1;
+}
+
+function endDateHtml(endDate){
+  if(!endDate) return '-';
+  const diff=getDaysLeft(endDate);
+  if(diff===0) return `<span class="expiring-date">D-DAY · ${endDate}</span>`;
+  if(diff===1) return `<span class="expiring-date">D-1 · ${endDate}</span>`;
+  if(diff===2) return `<span class="d2-date">D-2 · ${endDate}</span>`;
+  return endDate;
+}
+
+function addAudit(action,target,detail,slotId=null){
+  const localEntry={
+    id:null,
+    time:new Date().toLocaleString('ko-KR'),
+    account:currentUser?.id||'-',
+    action,
+    target,
+    detail
+  };
+
+  auditLogs.unshift(localEntry);
+  if(auditLogs.length>500) auditLogs=auditLogs.slice(0,500);
+
+  // 로그인 세션이 있고 Supabase가 연결된 경우 온라인 DB에도 저장
+  if(supabaseClient && currentUser?.uuid){
+    supabaseClient
+      .from('audit_logs')
+      .insert({
+        user_id:currentUser.uuid,
+        slot_id:slotId || null,
+        action:String(action||''),
+        target:String(target||''),
+        detail:String(detail||'')
+      })
+      .then(({error})=>{
+        if(error) console.error('audit insert error',error);
+      })
+      .catch(err=>console.error('audit insert error',err));
+  }
+}
+
+
+function buildSlotChangeDetail(before, after){
+  const fields=[
+    ['mall','쇼핑몰 이름'],
+    ['link','상품 링크'],
+    ['originalLink','원부링크'],
+    ['keywords','메인 키워드'],
+    ['keyword40','40위 이내 키워드'],
+    ['keyword15','15위 이내 키워드'],
+    ['mediaCompany','매체사'],
+    ['planType','진행 유형'],
+    ['approval','승인 상태'],
+    ['qty','수량'],
+    ['start','시작일'],
+    ['end','종료일'],
+    ['status','구동 상태'],
+    ['owner','등록 계정']
+  ];
+
+  const changes=[];
+
+  fields.forEach(([key,label])=>{
+    const a=before?.[key] ?? '';
+    const b=after?.[key] ?? '';
+    if(String(a)!==String(b)){
+      changes.push(`${label} ${a||'-'} → ${b||'-'}로 변경`);
+    }
+  });
+
+  return changes.length ? changes.join(' / ') : '변경된 항목 없음';
+}
+
+function esc(value){
+  return String(value ?? '').replace(/[&<>"']/g, ch=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#039;'
+  }[ch]));
+}
+
+function applyRoleView(){
+  const isAdmin=currentUser?.role==='관리자';
+  const slotTable=document.querySelector('#slots table');
+  if(slotTable){
+    const heads=[...slotTable.querySelectorAll('thead th')];
+    const idx=heads.findIndex(th=>th.textContent.trim()==='등록자');
+    if(idx>=0){slotTable.querySelectorAll('tr').forEach(tr=>{if(tr.children[idx]) tr.children[idx].style.display=isAdmin?'':'none';});}
+  }
+}
+async function loadAuditLogs(){
+  if(!supabaseClient || !currentUser?.uuid){
+    auditLogs=[];
+    return;
+  }
+
+  const {data,error}=await supabaseClient
+    .from('audit_logs')
+    .select(`
+      id,
+      user_id,
+      slot_id,
+      action,
+      target,
+      detail,
+      created_at,
+      profiles:user_id (
+        username
+      )
+    `)
+    .order('created_at',{ascending:false})
+    .limit(500);
+
+  if(error) throw error;
+
+  auditLogs=(data||[]).map(row=>({
+    id:row.id,
+    time:new Date(row.created_at).toLocaleString('ko-KR',{
+      timeZone:'Asia/Seoul'
+    }),
+    account:row.profiles?.username || row.user_id || '-',
+    action:row.action || '',
+    target:row.target || '',
+    detail:row.detail || ''
+  }));
+}
+
+async function renderAudit(){
+  const rows=document.getElementById('auditRows');
+  if(!rows) return;
+
+  try{
+    await loadAuditLogs();
+  }catch(err){
+    console.error('audit load error',err);
+    rows.innerHTML='<tr><td colspan="5">수정 이력을 불러오지 못했습니다.</td></tr>';
+    document.getElementById('auditCount').textContent='';
+    return;
+  }
+
+  document.getElementById('auditCount').textContent=`총 ${auditLogs.length}건`;
+  rows.innerHTML=auditLogs.map(log=>`
+    <tr>
+      <td>${esc(log.time)}</td>
+      <td>${esc(log.account)}</td>
+      <td>${esc(log.action)}</td>
+      <td>${esc(log.target)}</td>
+      <td>${esc(log.detail)}</td>
+    </tr>
+  `).join('');
+}
+function approvalHtml(slot){
+  if(currentUser?.role==='관리자'){
+    return `<select onchange="changeApproval('${slot.id}',this.value)" style="min-width:100px;padding:7px 9px;border-radius:9px;border:1px solid #e5e7eb;font-size:12px;font-weight:700;">${['승인대기','승인완료','반려'].map(v=>`<option ${slot.approval===v?'selected':''}>${v}</option>`).join('')}</select>`;
+  }
+  const cls=slot.approval==='승인완료'?'s-running':slot.approval==='반려'?'s-stop':'approval-wait';
+  return `<span class="status ${cls}">${slot.approval}</span>`;
+}
+async function changeApproval(id,value){
+  if(currentUser?.role!=='관리자') return;
+  const slot=slots.find(s=>String(s.id)===String(id));
+  if(!slot) return;
+
+  try{
+    const before=slot.approval;
+    const {error}=await supabaseClient
+      .from('slots')
+      .update({approval_status:value})
+      .eq('id',id);
+
+    if(error) throw error;
+
+    slot.approval=value;
+    addAudit('승인상태 변경',slot.mall,`승인 상태 ${before||'-'} → ${value||'-'}로 변경`,slot.id);
+    await reloadSupabaseSlots();
+    renderSlots();
+  }catch(err){
+    console.error(err);
+    alert(friendlySupabaseError(err));
+    await reloadSupabaseSlots().catch(()=>{});
+    renderSlots();
+  }
+}
+function getDaysLeft(endDate){
+  if(!endDate) return null; const today=new Date(); today.setHours(0,0,0,0); const end=new Date(endDate+'T00:00:00'); return Math.round((end-today)/(1000*60*60*24));
+}
+function syncAutomaticStatuses(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  slots.forEach(s=>{
+    if(s.status==='중지') return;
+    if(s.approval!=='승인완료'){s.status='시작예정';return;}
+    const start=new Date(s.start+'T00:00:00'), end=new Date(s.end+'T00:00:00');
+    if(today<start) s.status='시작예정'; else if(today.getTime()===end.getTime()) s.status='종료예정'; else if(today>end) s.status='종료'; else s.status='구동중';
+  });
+}
+function statusClass(s){
+  return s==='구동중'?'s-running':s==='시작예정'?'s-wait':s==='종료예정'?'s-ending':s==='종료'?'s-end':'s-stop';
+}
+
+function statusCellHtml(x){
+  if(currentUser?.role==='관리자'){
+    const options=['시작예정','구동중','종료예정','종료','중지'];
+    return `
+      <select onchange="changeSlotStatus('${x.id}', this.value)"
+              style="min-width:110px;padding:7px 10px;border-radius:9px;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:700;">
+        ${options.map(o=>`<option value="${o}" ${x.status===o?'selected':''}>${o}</option>`).join('')}
+      </select>`;
+  }
+  return statusHtml(x.status);
+}
+
+async function changeSlotStatus(id, newStatus){
+  if(currentUser?.role!=='관리자'){
+    alert('상태 변경은 관리자 계정에서만 가능합니다.');
+    return;
+  }
+
+  const x=slots.find(s=>String(s.id)===String(id));
+  if(!x) return;
+
+  try{
+    const before=x.status;
+    const {error}=await supabaseClient
+      .from('slots')
+      .update({status:newStatus})
+      .eq('id',id);
+
+    if(error) throw error;
+
+    x.status=newStatus;
+    addAudit('상태 변경',x.mall,`구동 상태 ${before||'-'} → ${newStatus||'-'}로 변경`,x.id);
+    await reloadSupabaseSlots();
+    renderSlots();
+  }catch(err){
+    console.error(err);
+    alert(friendlySupabaseError(err));
+    await reloadSupabaseSlots().catch(()=>{});
+    renderSlots();
+  }
+}
+
+function statusHtml(s){ return `<span class="status ${statusClass(s)}"><span class="dot"></span>${s}</span>`; }
+
+
+function getVisibleSlots(){
+  if(!currentUser) return [];
+
+  // 관리자는 전체 슬롯 확인
+  if(currentUser.role==='관리자'){
+    return slots;
+  }
+
+  // 현재 계정의 하위 회원 ID를 재귀적으로 수집
+  function getDescendantIds(parentId){
+    const directChildren = members
+      .filter(m => m.createdBy === parentId)
+      .map(m => m.id);
+
+    let all = [...directChildren];
+
+    directChildren.forEach(childId=>{
+      all = all.concat(getDescendantIds(childId));
+    });
+
+    return [...new Set(all)];
+  }
+
+  // 본인 + 본인이 만든 하위 계정만 포함
+  const allowedOwners = new Set([
+    currentUser.id,
+    ...getDescendantIds(currentUser.id)
+  ]);
+
+  return slots.filter(s => allowedOwners.has(s.owner));
+}
+
+function getSlotScopeText(){
+  if(!currentUser) return '';
+  if(currentUser.role==='관리자') return '관리자 계정: 전체 슬롯을 확인할 수 있습니다.';
+  if(currentUser.role==='총판') return '총판 계정: 본인 및 직접/하위로 생성한 대행사·셀러 슬롯만 확인할 수 있습니다.';
+  if(currentUser.role==='대행사') return '대행사 계정: 본인 및 직접 생성한 셀러 슬롯만 확인할 수 있습니다.';
+  if(currentUser.role==='셀러') return '셀러 계정: 본인 계정에 등록된 슬롯만 확인할 수 있습니다.';
+  return '';
+}
+
+
+// 승인대기 슬롯은 해당 슬롯을 볼 수 있는 모든 계정이 등록 정보를 수정할 수 있습니다.
+// 승인완료/반려 이후에는 관리자만 수정할 수 있습니다.
+function canEditSlot(slot){
+  if(!currentUser || !slot) return false;
+  if(!getVisibleSlots().some(s=>String(s.id)===String(slot.id))) return false;
+  return currentUser.role==='관리자' || (slot.approval||'승인대기')==='승인대기';
+}
+
+function editActionHtml(slot, dashboard=false){
+  if(canEditSlot(slot)){
+    return dashboard
+      ? `<button class="btn btn-soft" style="padding:7px 10px" onclick="openEdit('${slot.id}')">수정</button>`
+      : `<button onclick="openEdit('${slot.id}')">수정</button>`;
+  }
+  return currentUser?.role==='관리자' ? '' : '<span class="edit-locked" title="승인 완료 이후에는 관리자만 수정할 수 있습니다.">수정불가</span>';
+}
+
+function renderSlots(){
+  syncAutomaticStatuses();
+  const mall=(document.getElementById('searchMall')?.value||'').toLowerCase();
+  const kw=(document.getElementById('searchKeyword')?.value||'').toLowerCase();
+  const st=(document.getElementById('searchStatus')?.value||'');
+  const visibleSlots=getVisibleSlots();
+  const filtered=visibleSlots.filter(x=>
+    x.mall.toLowerCase().includes(mall) &&
+    [x.keywords, x.keyword40, x.keyword15].some(v=>String(v||'').toLowerCase().includes(kw)) &&
+    (!st || x.status===st)
+  );
+  const scopeNotice=document.getElementById('slotScopeNotice');
+  if(scopeNotice) scopeNotice.textContent=getSlotScopeText();
+  document.getElementById('slotCount').textContent=`총 ${filtered.length}개`;
+  document.getElementById('slotRows').innerHTML=filtered.map(x=>`
+    <tr>
+      <td>${approvalHtml(x)}</td>
+      <td>${statusCellHtml(x)}</td>
+      <td><strong>${x.mall}</strong></td>
+      <td><a href="${x.link}" target="_blank">상품보기</a></td>
+      <td>${x.originalLink ? `<a href="${x.originalLink}" target="_blank">가격비교</a>` : ''}</td>
+      <td>${x.keywords}</td>
+      <td>${x.keyword40 || '-'}</td>
+      <td>${x.keyword15 || '-'}</td>
+      <td style="text-align:center;">
+        <select class="table-media-select" onchange="changeMediaCompany('${x.id}', this.value)" ${currentUser?.role==='관리자'?'':'disabled'}>
+          <option value="" ${!x.mediaCompany?'selected':''}>선택</option>
+          <option value="A" ${x.mediaCompany==='A'?'selected':''}>A</option>
+          <option value="B" ${x.mediaCompany==='B'?'selected':''}>B</option>
+          <option value="C" ${x.mediaCompany==='C'?'selected':''}>C</option>
+          <option value="D" ${x.mediaCompany==='D'?'selected':''}>D</option>
+        </select>
+      </td>
+      <td><span class="slot-type-badge">${x.planType==='FREE TEST'?'FREE TEST':'STANDARD'}</span></td>
+      <td>${x.qty}</td>
+      <td>${x.start}</td>
+      <td>${endDateHtml(x.end)}</td>
+      <td>${x.owner}</td>
+      <td class="row-actions">
+        ${editActionHtml(x)}
+        ${currentUser?.role==='관리자' ? `<button onclick="stopSlot('${x.id}')">중지</button>` : ''}
+        <button class="delete-btn" onclick="deleteSlot('${x.id}')">삭제</button>
+      </td>
+    </tr>`).join('');
+  renderDashboard();
+  applyBusinessHoursUI();
+}
+
+function renderDashboard(){
+  syncAutomaticStatuses();
+  const visibleSlots=getVisibleSlots();
+  document.getElementById('dashboardSlotRows').innerHTML=visibleSlots.slice(0,5).map(x=>`
+    <tr>
+      <td>${statusHtml(x.status)}</td><td>${x.mall}</td><td>${x.keywords}</td><td>${x.start}</td><td>${endDateHtml(x.end)}</td>
+      <td>${editActionHtml(x,true)}</td>
+    </tr>`).join('');
+  document.getElementById('statAll').textContent=visibleSlots.length;
+  document.getElementById('statRunning').textContent=visibleSlots.filter(x=>x.status==='구동중').length;
+  document.getElementById('statWait').textContent=visibleSlots.filter(x=>x.status==='시작예정').length;
+  document.getElementById('statEnding').textContent=visibleSlots.filter(x=>x.status==='종료예정').length;
+  document.getElementById('statEnd').textContent=visibleSlots.filter(x=>x.status==='종료').length;
+}
+
+
+
+function applyPlanTypePermission(){
+  const wrap=document.getElementById('regPlanTypeWrap');
+  const select=document.getElementById('regPlanType');
+  if(!wrap || !select) return;
+
+  if(currentUser?.role==='관리자'){
+    wrap.style.display='';
+  }else{
+    wrap.style.display='none';
+    select.value='STANDARD';
+  }
+}
+
+function populateRegisterAccountSelect(){
+  const wrap=document.getElementById('regAccountWrap');
+  const select=document.getElementById('regAccount');
+
+  if(!wrap || !select || !currentUser) return;
+
+  // 셀러는 본인 계정으로 자동 등록하므로 선택 UI 자체를 숨김
+  if(currentUser.role==='셀러'){
+    wrap.style.display='none';
+    select.innerHTML=`<option value="${currentUser.id}" selected>${currentUser.id}</option>`;
+    return;
+  }
+
+  wrap.style.display='';
+  select.innerHTML='<option value="">계정을 선택하세요</option>';
+
+  let accounts=[];
+
+  if(currentUser.role==='관리자'){
+    accounts=[
+      {id:currentUser.id,role:'관리자'},
+      ...members.map(m=>({id:m.id,role:m.role,createdBy:m.createdBy}))
+    ];
+  }else if(currentUser.role==='총판'){
+    accounts=[
+      {id:currentUser.id,role:'총판'},
+      ...members
+        .filter(m=>m.createdBy===currentUser.id)
+        .map(m=>({id:m.id,role:m.role,createdBy:m.createdBy}))
+    ];
+  }else if(currentUser.role==='대행사'){
+    accounts=[
+      {id:currentUser.id,role:'대행사'},
+      ...members
+        .filter(m=>m.createdBy===currentUser.id && m.role==='셀러')
+        .map(m=>({id:m.id,role:m.role,createdBy:m.createdBy}))
+    ];
+  }
+
+  // 중복 제거
+  const seen=new Set();
+  accounts=accounts.filter(acc=>{
+    if(!acc?.id || seen.has(acc.id)) return false;
+    seen.add(acc.id);
+    return true;
+  });
+
+  accounts.forEach(acc=>{
+    const option=document.createElement('option');
+    option.value=acc.id;
+    option.textContent=`${acc.id} (${acc.role})`;
+    select.appendChild(option);
+  });
+}
+
+function calcEnd(){
+  const startInput=document.getElementById('regStart'); const s=startInput.value;
+  if(!s){document.getElementById('periodPreview').style.display='none';return '';}
+  const selected=new Date(s+'T00:00:00'); const today=new Date(); today.setHours(0,0,0,0); const tomorrow=new Date(today); tomorrow.setDate(tomorrow.getDate()+1);
+  if(selected<tomorrow){alert('구동 시작일은 내일부터 선택할 수 있습니다.'); startInput.value=''; document.getElementById('periodPreview').style.display='none'; return '';}
+  const planType=document.getElementById('regPlanType')?.value||'STANDARD'; const days=planType==='FREE TEST'?5:10;
+  const end=new Date(selected); end.setDate(end.getDate()+days-1);
+  const endStr=[end.getFullYear(),String(end.getMonth()+1).padStart(2,'0'),String(end.getDate()).padStart(2,'0')].join('-');
+  document.getElementById('periodText').textContent=`${s} ~ ${endStr} (${days}일)`; document.getElementById('periodPreview').style.display='block'; return endStr;
+}
+
+
+function isValidSmartstoreProductUrl(url){
+  return /^https:\/\/smartstore\.naver\.com\/[^\/?#]+\/products\/\d+$/.test(url);
+}
+
+function normalizeOriginalLink(url){
+  const value=String(url||'').trim();
+  const match=value.match(/^https:\/\/search\.shopping\.naver\.com\/catalog\/([0-9]+)\/?$/);
+  return match ? `https://search.shopping.naver.com/catalog/${match[1]}/` : '';
+}
+
+function isValidOriginalLink(url){
+  return !!normalizeOriginalLink(url);
+}
+
+// 모든 키워드는 필수입니다. 완성형 한글 1글자(예: 꿀, 철, 쌀)는 허용하며,
+// 단일 자음/모음/숫자/영문(예: ㅁ, ㅗ, 5, a)과 공백만 입력한 값은 허용하지 않습니다.
+function validateSlotKeywords(fields){
+  for(const [id,label] of fields){
+    const input=document.getElementById(id);
+    const value=input.value.trim();
+    const compact=value.replace(/\s/g,'');
+    if(!compact){
+      alert(label+'를 입력해 주세요. (필수 항목)');
+      input.focus();
+      return false;
+    }
+
+    const chars=Array.from(compact);
+    if(chars.length===1){
+      // 1글자는 완성형 한글 음절만 허용
+      if(!/^[가-힣]$/.test(compact)){
+        alert(label+'는 한 글자로 입력할 경우 꿀, 철, 쌀처럼 완성된 한글만 입력할 수 있습니다.');
+        input.focus();
+        return false;
+      }
+    }else if(/^[ㄱ-ㅎㅏ-ㅣ]+$/.test(compact)){
+      // 두 글자 이상이어도 자음/모음만 나열한 값은 차단
+      alert(label+'에는 자음 또는 모음만 입력할 수 없습니다. 올바른 키워드를 입력해 주세요.');
+      input.focus();
+      return false;
+    }
+  }
+  return true;
+}
+
+
+
+
+function hideSellerOwnerHelp(){
+  if(!currentUser || currentUser.role!=='셀러') return;
+  document.querySelectorAll('div,p,small,span').forEach(el=>{
+    const t=(el.textContent||'').trim();
+    if(t==='선택한 계정이 직접 슬롯을 등록한 것처럼 저장됩니다.'){
+      el.style.display='none';
+    }
+    if(t==='계정을 선택하세요' && el.tagName!=='OPTION'){
+      el.style.display='none';
+    }
+  });
+}
+
+
+
+function applyBusinessHoursUI(){
+  if(!currentUser) return;
+  const allowed = currentUser?.role==='관리자'
+    ? true
+    : (['총판','대행사','셀러'].includes(currentUser?.role) && getBusinessHoursStatus().isOpen);
+
+  // 버튼은 클릭 가능하게 유지합니다. 마감 시 showPage/addSlot/openEdit에서 안내 후 차단합니다.
+  document.querySelectorAll('button').forEach(btn=>{
+    const t=(btn.textContent||'').trim();
+    if(t==='슬롯 등록' || t==='+ 슬롯 등록' || t==='수정'){
+      btn.disabled=false;
+      btn.title=allowed?'':businessHoursMessage();
+    }
+  });
+}
+
+function configureMediaCompany(){
+  const reg=document.getElementById('regMediaCompany');
+  const edit=document.getElementById('editMediaCompany');
+  const isAdmin=currentUser?.role==='관리자';
+
+  if(reg){
+    reg.disabled=!isAdmin;
+    if(!isAdmin) reg.value='';
+  }
+  if(edit){
+    edit.disabled=!isAdmin;
+  }
+}
+
+function configureRegistrationOwner(){
+  const ownerSelect=document.getElementById('regOwner');
+  if(!ownerSelect || !currentUser) return;
+
+  let section=document.getElementById('regOwnerSection');
+
+  // 기존 HTML 구조 대응: select와 안내문을 함께 가진 영역을 최대한 넓게 잡음
+  if(!section){
+    section=ownerSelect.closest('.form-group') || ownerSelect.parentElement;
+  }
+
+  if(currentUser.role==='셀러'){
+    // 셀러는 계정 선택 UI와 안내문 전체를 숨기고 본인 계정으로 자동 저장
+    if(section) section.style.display='none';
+    ownerSelect.value=currentUser.id;
+    setTimeout(hideSellerOwnerHelp,0);
+  }else{
+    if(section) section.style.display='';
+  }
+}
+
+
+function getKoreaDateParts(){
+  const parts=new Intl.DateTimeFormat('en-US',{
+    timeZone:'Asia/Seoul',
+    weekday:'short',
+    hour:'2-digit',
+    minute:'2-digit',
+    second:'2-digit',
+    hourCycle:'h23'
+  }).formatToParts(new Date());
+
+  const map={};
+  parts.forEach(p=>{ if(p.type!=='literal') map[p.type]=p.value; });
+
+  const weekend=(map.weekday==='Sat' || map.weekday==='Sun');
+
+  return {
+    isWeekend:weekend,
+    hour:Number(map.hour||0),
+    minute:Number(map.minute||0),
+    second:Number(map.second||0)
+  };
+}
+
+function getBusinessHoursStatus(){
+  const kst=getKoreaDateParts();
+  const closeHour=kst.isWeekend?11:17;
+  const currentSeconds=kst.hour*3600 + kst.minute*60 + kst.second;
+  const closeSeconds=closeHour*3600;
+
+  return {
+    isWeekend:kst.isWeekend,
+    closeHour,
+    isOpen:currentSeconds < closeSeconds,
+    label:kst.isWeekend?'주말':'평일',
+    currentTime:`${String(kst.hour).padStart(2,'0')}:${String(kst.minute).padStart(2,'0')}:${String(kst.second).padStart(2,'0')}`
+  };
+}
+
+function canUseBusinessHours(){
+  // 관리자만 운영시간 제한 예외
+  if(currentUser?.role==='관리자') return true;
+
+  // 총판/대행사/셀러는 모두 한국시간 마감 적용
+  if(['총판','대행사','셀러'].includes(currentUser?.role)){
+    return getBusinessHoursStatus().isOpen;
+  }
+
+  return false;
+}
+
+function businessHoursMessage(){
+  const s=getBusinessHoursStatus();
+  return `${s.label} 전산 접수 가능 시간은 00:00:00~${String(s.closeHour).padStart(2,'0')}:00:00입니다.\n마감 이후에는 관리자만 슬롯 등록/수정이 가능합니다.`;
+}
+
+function configureQtyInput(){
+  const regQty=document.getElementById('regQty');
+  if(!regQty || !currentUser) return;
+  if(currentUser.role==='관리자'){
+    regQty.min='1';
+    regQty.step='1';
+  }else{
+    regQty.min='100';
+    regQty.step='100';
+  }
+  if(!regQty.value || Number(regQty.value)<=0) regQty.value='100';
+}
+
+function validateQuantity(value, isAdmin, inputId){
+  const input=document.getElementById(inputId);
+  const qty=Number(value);
+  if(!Number.isInteger(qty) || qty<=0){
+    alert('수량은 1 이상의 숫자로 입력해 주세요.');
+    if(input) input.focus();
+    return false;
+  }
+  if(!isAdmin && (qty<100 || qty%100!==0)){
+    alert('수량은 100단위로 입력해주세요');
+    if(input) input.focus();
+    return false;
+  }
+  return true;
+}
+
+async function addSlot(){
+  if(currentUser?.role!=='관리자' && !getBusinessHoursStatus().isOpen){
+    alert(businessHoursMessage());
+    return;
+  }
+  if(!['관리자','총판','대행사','셀러'].includes(currentUser?.role)){
+    alert('슬롯 등록 권한이 없습니다.');
+    return;
+  }
+
+  configureQtyInput();
+  configureRegistrationOwner();
+  configureMediaCompany();
+
+  const mall=document.getElementById('regMall').value.trim();
+  const link=document.getElementById('regLink').value.trim();
+  const originalLink=document.getElementById('regOriginalLink').value.trim();
+  const keywords=document.getElementById('regKeywords').value.trim();
+  const keyword40=document.getElementById('regKeyword40').value.trim();
+  const keyword15=document.getElementById('regKeyword15').value.trim();
+  const startDate=document.getElementById('regStart').value;
+  const endDate=calcEnd();
+
+  if(!mall || !link || !startDate || !endDate){
+    alert('쇼핑몰 이름, 상품 링크, 구동 시작일은 필수입니다.');
+    return;
+  }
+
+  if(!validateSlotKeywords([
+    ['regKeywords','메인 키워드'],
+    ['regKeyword40','40위 이내 키워드'],
+    ['regKeyword15','15위 이내 키워드']
+  ])) return;
+
+  if(!isValidSmartstoreProductUrl(link)){
+    alert('상품 링크는 https://smartstore.naver.com/스토어명/products/상품번호 형식만 등록할 수 있습니다.');
+    document.getElementById('regLink').focus();
+    return;
+  }
+
+  if(originalLink && !isValidOriginalLink(originalLink)){
+    alert('원부링크는 https://search.shopping.naver.com/catalog/숫자/ 형식만 등록할 수 있습니다.');
+    document.getElementById('regOriginalLink').focus();
+    return;
+  }
+
+  const qty=Number(document.getElementById('regQty').value);
+  if(!validateQuantity(qty,currentUser?.role==='관리자','regQty')) return;
+
+  let ownerUsername=currentUser.id;
+  if(currentUser.role!=='셀러'){
+    const selected=document.getElementById('regAccount')?.value || '';
+    if(!selected){
+      alert('슬롯을 등록할 계정을 선택해 주세요.');
+      return;
+    }
+    ownerUsername=selected;
+  }
+
+  const ownerUuid=profileUuidByUsername(ownerUsername);
+  if(!ownerUuid){
+    alert('선택한 계정의 온라인 회원 정보를 찾을 수 없습니다.');
+    return;
+  }
+
+  const planType=currentUser.role==='관리자'
+    ? (document.getElementById('regPlanType')?.value || 'STANDARD')
+    : 'STANDARD';
+
+  const mediaCompany=currentUser.role==='관리자'
+    ? (document.getElementById('regMediaCompany')?.value || null)
+    : null;
+
+  const payload={
+    owner_user_id:ownerUuid,
+    mall_name:mall,
+    product_link:link,
+    original_link:originalLink ? normalizeOriginalLink(originalLink) : null,
+    main_keyword:keywords,
+    keyword_40:keyword40,
+    keyword_15:keyword15,
+    media_company:mediaCompany,
+    plan_type:planType,
+    quantity:qty,
+    approval_status:'승인대기',
+    status:'시작예정',
+    start_date:startDate,
+    end_date:endDate,
+    memo:document.getElementById('regMemo')?.value?.trim() || null,
+    created_by:currentUser.uuid
+  };
+
+  try{
+    const {error}=await supabaseClient.from('slots').insert(payload);
+    if(error) throw error;
+
+    addAudit('슬롯 등록',mall,`${planType} / 승인대기`);
+    await reloadSupabaseSlots();
+    resetRegister();
+    renderSlots();
+    showPage('slots');
+    alert('슬롯이 등록되었습니다. 관리자 승인 후 구동 상태로 반영됩니다.');
+  }catch(err){
+    console.error(err);
+    alert(friendlySupabaseError(err));
+  }
+}
+function resetRegister(){
+  ['regMall','regLink','regOriginalLink','regKeywords','regKeyword40','regKeyword15','regStart','regMemo'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value='';
+  });
+  document.getElementById('regQty').value=100;
+  const planType=document.getElementById('regPlanType'); if(planType) planType.value='FREE TEST';
+  const accountSelect=document.getElementById('regAccount');
+  if(accountSelect) accountSelect.value='';
+  const preview=document.getElementById('periodPreview');
+  if(preview) preview.style.display='none';
+}
+
+
+
+function canDeleteSlot(slot){
+  if(!currentUser || !slot) return false;
+  if(!getVisibleSlots().some(s=>String(s.id)===String(slot.id))) return false;
+  if(currentUser.role==='관리자') return true;
+  return (slot.approval||'승인대기')==='승인대기';
+}
+
+async function deletePendingSlot(id){
+  return deleteSlot(id);
+}
+
+function openEdit(id){
+  if(!canUseBusinessHours()){
+    alert(businessHoursMessage());
+    return;
+  }
+  syncAutomaticStatuses();
+  const x=slots.find(s=>String(s.id)===String(id));
+  if(!x) return;
+  if(!canEditSlot(x)){
+    alert('승인 완료 이후에는 관리자 계정에서만 수정할 수 있습니다.');
+    return;
+  }
+
+  document.getElementById('editId').value=x.id;
+  document.getElementById('editMall').value=x.mall;
+  document.getElementById('editLink').value=x.link;
+  document.getElementById('editOriginalLink').value=x.originalLink || '';
+  document.getElementById('editKeywords').value=x.keywords;
+  document.getElementById('editKeyword40').value=x.keyword40 || '';
+  document.getElementById('editKeyword15').value=x.keyword15 || '';
+
+  document.getElementById('editPlanType').value=x.planType ?? 'STANDARD';
+  document.getElementById('editApproval').value=x.approval ?? '승인대기';
+  document.getElementById('editQty').value=x.qty ?? '';
+  document.getElementById('editQty').min=currentUser?.role==='관리자'?'1':'100';
+  document.getElementById('editQty').step=currentUser?.role==='관리자'?'1':'100';
+  document.getElementById('editStart').value=x.start ?? '';
+  document.getElementById('editEnd').value=x.end ?? '';
+  document.getElementById('editStatus').value=x.status ?? '';
+  document.getElementById('editOwner').value=x.owner ?? '';
+
+  const isAdmin=currentUser?.role==='관리자';
+  const isPending=(x.approval||'승인대기')==='승인대기';
+
+  // 관리자: 모든 항목 수정 가능
+  // 비관리자 + 승인대기: 사용자가 등록한 기본 정보만 수정 가능
+  const basicEditable=['editMall','editLink','editOriginalLink','editKeywords','editKeyword40','editKeyword15','editQty','editStart'];
+  const allFields=['editMall','editLink','editOriginalLink','editKeywords','editKeyword40','editKeyword15','editPlanType','editApproval','editQty','editStart','editEnd','editStatus','editOwner'];
+  allFields.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.disabled = isAdmin ? false : !(isPending && basicEditable.includes(id));
+  });
+
+  const note=document.getElementById('editPermissionNote');
+  if(note){
+    note.textContent=isAdmin
+      ? '관리자 계정에서는 모든 슬롯 항목을 수정할 수 있습니다.'
+      : '승인대기 상태에서는 등록 정보를 수정할 수 있으며, 승인 완료 이후에는 관리자만 수정할 수 있습니다.';
+  }
+
+  document.getElementById('editModal').classList.remove('hidden');
+}
+function closeEdit(){document.getElementById('editModal').classList.add('hidden')}
+async function saveEdit(){
+  if(!canUseBusinessHours()){
+    alert(businessHoursMessage());
+    return;
+  }
+
+  const id=document.getElementById('editId').value;
+  const x=slots.find(s=>String(s.id)===String(id));
+  if(!x) return;
+
+  if(!canEditSlot(x)){
+    closeEdit();
+    renderSlots();
+    alert('승인 완료 이후에는 관리자 계정에서만 수정할 수 있습니다.');
+    return;
+  }
+
+  const mall=document.getElementById('editMall').value.trim();
+  const link=document.getElementById('editLink').value.trim();
+  const originalLink=document.getElementById('editOriginalLink').value.trim();
+  const keywords=document.getElementById('editKeywords').value.trim();
+  const keyword40=document.getElementById('editKeyword40').value.trim();
+  const keyword15=document.getElementById('editKeyword15').value.trim();
+
+  if(!mall || !link){
+    alert('쇼핑몰 이름과 상품 링크는 비워둘 수 없습니다.');
+    return;
+  }
+
+  if(!validateSlotKeywords([
+    ['editKeywords','메인 키워드'],
+    ['editKeyword40','40위 이내 키워드'],
+    ['editKeyword15','15위 이내 키워드']
+  ])) return;
+
+  if(!isValidSmartstoreProductUrl(link)){
+    alert('상품 링크 형식을 확인해 주세요.');
+    return;
+  }
+
+  if(originalLink && !isValidOriginalLink(originalLink)){
+    alert('원부링크는 https://search.shopping.naver.com/catalog/숫자/ 형식만 등록할 수 있습니다.');
+    return;
+  }
+
+  const editQty=Number(document.getElementById('editQty').value);
+  if(!validateQuantity(editQty,currentUser?.role==='관리자','editQty')) return;
+
+  const payload={
+    mall_name:mall,
+    product_link:link,
+    original_link:originalLink ? normalizeOriginalLink(originalLink) : null,
+    main_keyword:keywords,
+    keyword_40:keyword40,
+    keyword_15:keyword15
+  };
+
+  if((x.approval||'승인대기')==='승인대기'){
+    payload.quantity=editQty;
+    payload.start_date=document.getElementById('editStart').value;
+  }
+
+  if(currentUser.role==='관리자'){
+    payload.plan_type=document.getElementById('editPlanType').value;
+    payload.approval_status=document.getElementById('editApproval').value;
+    payload.quantity=editQty;
+    payload.start_date=document.getElementById('editStart').value;
+    payload.end_date=document.getElementById('editEnd').value || null;
+    payload.status=document.getElementById('editStatus').value;
+
+    const ownerUsername=document.getElementById('editOwner').value.trim();
+    const ownerUuid=profileUuidByUsername(ownerUsername);
+    if(!ownerUuid){
+      alert('등록자 계정 정보를 찾을 수 없습니다.');
+      return;
+    }
+    payload.owner_user_id=ownerUuid;
+  }
+
+  try{
+    const {error}=await supabaseClient
+      .from('slots')
+      .update(payload)
+      .eq('id',id);
+
+    if(error) throw error;
+
+    const ownerUsername = payload.owner_user_id
+      ? (members.find(m=>m.uuid===payload.owner_user_id)?.id || currentUser?.id || x.owner)
+      : x.owner;
+
+    const afterSnapshot={
+      mall:payload.mall_name ?? x.mall,
+      link:payload.product_link ?? x.link,
+      originalLink:payload.original_link ?? x.originalLink ?? '',
+      keywords:payload.main_keyword ?? x.keywords,
+      keyword40:payload.keyword_40 ?? x.keyword40 ?? '',
+      keyword15:payload.keyword_15 ?? x.keyword15 ?? '',
+      mediaCompany:payload.media_company ?? x.mediaCompany ?? '',
+      planType:payload.plan_type ?? x.planType,
+      approval:payload.approval_status ?? x.approval,
+      qty:payload.quantity ?? x.qty,
+      start:payload.start_date ?? x.start,
+      end:payload.end_date ?? x.end,
+      status:payload.status ?? x.status,
+      owner:ownerUsername
+    };
+
+    const detail=buildSlotChangeDetail(beforeSnapshot,afterSnapshot);
+    addAudit('슬롯 수정',mall,detail,id);
+
+    await reloadSupabaseSlots();
+    closeEdit();
+    renderSlots();
+    renderDashboard();
+    alert('슬롯 정보가 수정되었습니다.');
+  }catch(err){
+    console.error(err);
+    alert(friendlySupabaseError(err));
+  }
+}
+
+async function changeMediaCompany(id,value){
+  if(currentUser?.role!=='관리자'){
+    alert('매체사는 관리자 계정에서만 수정할 수 있습니다.');
+    renderSlots();
+    return;
+  }
+
+  const x=slots.find(s=>String(s.id)===String(id));
+  if(!x) return;
+
+  try{
+    const {error}=await supabaseClient
+      .from('slots')
+      .update({media_company:value || null})
+      .eq('id',id);
+
+    if(error) throw error;
+
+    addAudit('매체사 수정',x.mall,`매체사 ${x.mediaCompany||'-'} → ${value||'-'}로 변경`,x.id);
+    await reloadSupabaseSlots();
+    renderSlots();
+  }catch(err){
+    console.error(err);
+    alert(friendlySupabaseError(err));
+    await reloadSupabaseSlots().catch(()=>{});
+    renderSlots();
+  }
+}
+
+async function deleteSlot(id){
+  const x=slots.find(s=>String(s.id)===String(id));
+  if(!x) return;
+
+  if(!canDeleteSlot(x)){
+    alert('승인완료 또는 구동중 슬롯은 삭제가 불가능합니다\n관리자에게 문의해주세요');
+    return;
+  }
+
+  const ok=confirm(`[${x.mall}] 슬롯을 삭제할까요?
+삭제한 슬롯은 복구할 수 없습니다.`);
+  if(!ok) return;
+
+  try{
+    const {error}=await supabaseClient
+      .from('slots')
+      .delete()
+      .eq('id',id);
+
+    if(error) throw error;
+
+    addAudit('슬롯 삭제',x.mall,`슬롯 ID ${id}`,id);
+    await reloadSupabaseSlots();
+    renderSlots();
+    renderDashboard();
+    alert('슬롯이 삭제되었습니다.');
+  }catch(err){
+    console.error(err);
+    alert(friendlySupabaseError(err));
+  }
+}
+
+async function stopSlot(id){
+  const x=slots.find(s=>String(s.id)===String(id));
+  if(!x) return;
+  if(currentUser?.role!=='관리자') return;
+
+  if(!confirm('해당 슬롯을 중지 처리할까요?')) return;
+
+  try{
+    const before=x.status;
+    const {error}=await supabaseClient
+      .from('slots')
+      .update({status:'중지'})
+      .eq('id',id);
+
+    if(error) throw error;
+
+    addAudit('슬롯 중지',x.mall,`${before} → 중지`,x.id);
+    await reloadSupabaseSlots();
+    renderSlots();
+  }catch(err){
+    console.error(err);
+    alert(friendlySupabaseError(err));
+  }
+}
+
+function getVisibleMembers(){
+  if(!currentUser) return [];
+
+  // 관리자는 전체 회원
+  if(currentUser.role==='관리자'){
+    return members;
+  }
+
+  // 총판/대행사는 본인 계정으로 직접 생성한 회원만
+  if(currentUser.role==='총판' || currentUser.role==='대행사'){
+    return members.filter(m => m.createdBy===currentUser.id);
+  }
+
+  // 셀러는 본인 계정만
+  if(currentUser.role==='셀러'){
+    return members.filter(m => m.id===currentUser.id);
+  }
+
+  return [];
+}
+
+function renderMembers(){
+  const q=(document.getElementById('memberSearch')?.value||'').toLowerCase();
+  const r=(document.getElementById('memberRoleFilter')?.value||'');
+
+  const visible = getVisibleMembers();
+
+  const roleFilter=document.getElementById('memberRoleFilter');
+  if(roleFilter){
+    [...roleFilter.options].forEach(o=>o.hidden=false);
+
+    if(currentUser?.role==='총판'){
+      [...roleFilter.options].forEach(o=>{
+        if(o.value==='총판') o.hidden=true;
+      });
+      if(roleFilter.value==='총판') roleFilter.value='';
+    }else if(currentUser?.role==='대행사'){
+      [...roleFilter.options].forEach(o=>{
+        if(o.value==='총판'||o.value==='대행사') o.hidden=true;
+      });
+      if(roleFilter.value==='총판'||roleFilter.value==='대행사') roleFilter.value='';
+    }else if(currentUser?.role==='셀러'){
+      [...roleFilter.options].forEach(o=>{
+        if(o.value && o.value!=='셀러') o.hidden=true;
+      });
+      roleFilter.value='셀러';
+    }
+  }
+
+  const filtered=visible.filter(m=>
+    m.id.toLowerCase().includes(q) &&
+    (!roleFilter?.value || m.role===roleFilter.value)
+  );
+
+  const notice=document.getElementById('memberScopeNotice');
+  if(notice){
+    const msg={
+      '관리자':'관리자 계정: 전체 회원을 확인할 수 있습니다.',
+      '총판':'총판 계정: 이 총판 계정으로 직접 생성한 대행사 / 셀러 회원만 표시됩니다.',
+      '대행사':'대행사 계정: 이 대행사 계정으로 직접 생성한 셀러 회원만 표시됩니다.',
+      '셀러':'셀러 계정: 본인 계정만 확인할 수 있습니다.'
+    };
+    notice.textContent=msg[currentUser?.role]||'';
+  }
+
+  const signupBtn=document.getElementById('memberSignupBtn');
+  if(signupBtn) signupBtn.style.display=currentUser?.role==='셀러'?'none':'';
+
+  document.getElementById('memberCount').textContent=`총 ${filtered.length}명`;
+  document.getElementById('memberRows').innerHTML=filtered.map(m=>`
+    <tr>
+      <td><strong>${m.id}</strong></td>
+      <td>••••••••</td>
+      <td><span class="member-badge">${m.role}</span></td>
+      <td>${m.createdBy || '-'}</td>
+      <td>${m.status}</td>
+      <td class="row-actions">
+        ${currentUser?.role==='관리자'
+          ? `<button onclick="openMemberEdit('${m.id}')">수정</button>`
+          : ''}
+        ${currentUser?.role==='관리자' || m.createdBy===currentUser?.id
+          ? `<button onclick="toggleMember('${m.id}')">${m.status==='정상'?'정지':'활성화'}</button>`
+          : '-'}
+        ${currentUser?.role==='관리자'
+          ? `<button class="delete-btn" onclick="deleteMember('${m.id}')">삭제</button>`
+          : ''}
+      </td>
+    </tr>`).join('');
+}
+
+async function toggleMember(id){
+  const m=members.find(x=>x.id===id);
+  if(!m) return;
+
+  const canManage =
+    currentUser?.role==='관리자' ||
+    m.createdBy===currentUser?.id;
+
+  if(!canManage){
+    alert('이 회원을 관리할 권한이 없습니다.');
+    return;
+  }
+
+  const nextActive=m.status!=='정상';
+
+  try{
+    const {error}=await supabaseClient
+      .from('profiles')
+      .update({is_active:nextActive})
+      .eq('id',m.uuid);
+
+    if(error) throw error;
+
+    addAudit('회원 상태변경',m.id,`회원 상태 ${m.status||'-'} → ${nextActive?'정상':'정지'}로 변경`);
+    await reloadSupabaseMembers();
+    renderMembers();
+  }catch(err){
+    console.error(err);
+    alert(friendlySupabaseError(err));
+  }
+}
+
+
+function openMemberEdit(id){
+  if(currentUser?.role!=='관리자'){
+    alert('회원 수정은 관리자 계정에서만 가능합니다.');
+    return;
+  }
+
+  const m=members.find(x=>x.id===id);
+  if(!m) return;
+
+  document.getElementById('memberEditOriginalId').value=m.id;
+  document.getElementById('memberEditId').value=m.id;
+  document.getElementById('memberEditPw').value='';
+  document.getElementById('memberEditPw').placeholder='변경하지 않음';
+  document.getElementById('memberEditPw').disabled=false;
+  document.getElementById('memberEditRole').value=m.role;
+  document.getElementById('memberEditStatus').value=m.status;
+  document.getElementById('memberEditModal').classList.remove('hidden');
+}
+
+function closeMemberEdit(){
+  document.getElementById('memberEditModal').classList.add('hidden');
+}
+
+async function saveMemberEdit(){
+  if(currentUser?.role!=='관리자'){
+    alert('회원 수정은 관리자 계정에서만 가능합니다.');
+    return;
+  }
+
+  const originalId=document.getElementById('memberEditOriginalId').value;
+  const m=members.find(x=>x.id===originalId);
+  if(!m) return;
+
+  const newId=document.getElementById('memberEditId').value.trim();
+  const newPw=document.getElementById('memberEditPw').value;
+  const newRole=document.getElementById('memberEditRole').value;
+  const newStatus=document.getElementById('memberEditStatus').value;
+
+  if(!newId){
+    alert('아이디를 입력해 주세요.');
+    return;
+  }
+
+  try{
+    await callMemberAdminFunction('update',{
+      user_id:m.uuid,
+      username:newId,
+      password:newPw || null,
+      role:newRole,
+      is_active:newStatus==='정상'
+    });
+
+    const memberChanges=[];
+    if(originalId!==newId) memberChanges.push(`아이디 ${originalId} → ${newId}로 변경`);
+    if(m.role!==newRole) memberChanges.push(`가입유형 ${m.role} → ${newRole}로 변경`);
+    if(m.status!==newStatus) memberChanges.push(`회원 상태 ${m.status} → ${newStatus}로 변경`);
+    if(newPw) memberChanges.push('비밀번호 변경');
+    addAudit('회원 수정',newId,memberChanges.join(' / ') || '변경된 항목 없음');
+    await reloadSupabaseMembers();
+    await reloadSupabaseSlots();
+    closeMemberEdit();
+    renderMembers();
+    renderSlots();
+    alert('회원 정보가 수정되었습니다.');
+  }catch(err){
+    console.error(err);
+    alert(String(err.message||err));
+  }
+}
+async function deleteMember(id){
+  if(currentUser?.role!=='관리자'){
+    alert('회원 삭제는 관리자 계정에서만 가능합니다.');
+    return;
+  }
+
+  const m=members.find(x=>x.id===id);
+  if(!m) return;
+
+  const ok=confirm(`[${m.id}] 회원을 삭제할까요?
+해당 회원 계정은 로그인할 수 없게 됩니다.`);
+  if(!ok) return;
+
+  try{
+    await callMemberAdminFunction('delete',{user_id:m.uuid});
+    addAudit('회원 삭제',id,'관리자 삭제');
+    await reloadSupabaseMembers();
+    renderMembers();
+    alert('회원이 삭제되었습니다.');
+  }catch(err){
+    console.error(err);
+    alert(String(err.message||err));
+  }
+}
+
+function openMemberSignup(){
+  if(!currentUser || currentUser.role==='셀러'){
+    return;
+  }
+
+  const roleSelect=document.getElementById('newMemberRole');
+  roleSelect.innerHTML='';
+
+  let allowedRoles=[];
+  if(currentUser.role==='관리자'){
+    allowedRoles=['총판','대행사','셀러'];
+  }else if(currentUser.role==='총판'){
+    allowedRoles=['대행사','셀러'];
+  }else if(currentUser.role==='대행사'){
+    allowedRoles=['셀러'];
+  }
+
+  allowedRoles.forEach(role=>{
+    const option=document.createElement('option');
+    option.value=role;
+    option.textContent=role;
+    roleSelect.appendChild(option);
+  });
+
+  document.getElementById('newMemberId').value='';
+  document.getElementById('newMemberPw').value='';
+  document.getElementById('memberSignupModal').classList.remove('hidden');
+}
+
+function closeMemberSignup(){
+  document.getElementById('memberSignupModal').classList.add('hidden');
+}
+
+async function createMemberByCurrentUser(){
+  if(!currentUser || currentUser.role==='셀러'){
+    alert('회원 생성 권한이 없습니다.');
+    return;
+  }
+
+  const id=document.getElementById('newMemberId').value.trim();
+  const pw=document.getElementById('newMemberPw').value;
+  const role=document.getElementById('newMemberRole').value;
+
+  if(!id || !pw){
+    alert('아이디와 비밀번호를 입력해 주세요.');
+    return;
+  }
+
+  if(!/^[a-zA-Z0-9._-]{3,40}$/.test(id)){
+    alert('아이디는 영문/숫자/._- 조합 3~40자로 입력해 주세요.');
+    return;
+  }
+
+  if(pw.length<6){
+    alert('비밀번호는 6자 이상 입력해 주세요.');
+    return;
+  }
+
+  const allowed={
+    '관리자':['총판','대행사','셀러'],
+    '총판':['대행사','셀러'],
+    '대행사':['셀러']
+  }[currentUser.role]||[];
+
+  if(!allowed.includes(role)){
+    alert('선택한 회원 유형을 생성할 권한이 없습니다.');
+    return;
+  }
+
+  if(members.some(m=>m.id===id) || currentUser.id===id){
+    alert('이미 사용 중인 아이디입니다.');
+    return;
+  }
+
+  try{
+    await callMemberAdminFunction('create',{
+      username:id,
+      password:pw,
+      role
+    });
+
+    addAudit('회원 생성',id,`가입유형: ${role}`);
+    await reloadSupabaseMembers();
+    closeMemberSignup();
+    renderMembers();
+    populateRegisterAccountSelect();
+    alert('회원 계정이 생성되었습니다.');
+  }catch(err){
+    console.error(err);
+    alert(String(err.message||err));
+  }
+}
+
+
+function setMinStartDate(){
+  const input=document.getElementById('regStart');
+  if(!input) return;
+
+  const now=new Date();
+  now.setHours(0,0,0,0);
+  now.setDate(now.getDate()+1);
+
+  const minDate=[
+    now.getFullYear(),
+    String(now.getMonth()+1).padStart(2,'0'),
+    String(now.getDate()).padStart(2,'0')
+  ].join('-');
+
+  input.min=minDate;
+
+  if(input.value && input.value < minDate){
+    input.value='';
+    const preview=document.getElementById('periodPreview');
+    if(preview) preview.style.display='none';
+  }
+}
+
+setMinStartDate();
+initSupabaseClient();
+restoreSupabaseSession();
+
+setInterval(()=>{ if(currentUser) applyBusinessHoursUI(); },30000);
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && !document.getElementById('loginScreen').classList.contains('hidden')) login();
+});
+</script>
+</body>
+</html>
