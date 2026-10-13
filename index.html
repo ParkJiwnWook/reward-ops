@@ -218,6 +218,33 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
 
 
 
+
+.refund-status{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:68px;
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.refund-request{background:#fff7ed;color:#c2410c}
+.refund-processing{background:#eff6ff;color:#1d4ed8}
+.refund-done{background:#ecfdf3;color:#15803d}
+.refund-rejected{background:#fef2f2;color:#b91c1c}
+.refund-btn{
+  border:1px solid #d8dee9;
+  background:#fff;
+  color:#344054;
+  border-radius:8px;
+  padding:7px 9px;
+  font-size:11px;
+  cursor:pointer;
+}
+.refund-btn:hover{background:#f8fafc}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -265,6 +292,7 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
         <div class="nav-title">SLOT</div>
         <button data-page="slots" onclick="showPage('slots',this)">전체 슬롯</button>
         <button data-page="register" onclick="showPage('register',this)">슬롯 등록</button>
+        <button data-page="refunds" onclick="showPage('refunds',this)">환불 관리</button>
 
         <div class="nav-title">MEMBER</div>
         <button data-page="members" onclick="showPage('members',this)">회원 관리</button>
@@ -425,6 +453,50 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
         </div>
       </section>
 
+
+      <section id="refunds" class="page">
+        <div class="notice">
+          환불 요청은 전산 접수 가능 시간 내에만 가능합니다. 마감 이후에는 관리자만 처리할 수 있습니다.
+        </div>
+
+        <div class="toolbar">
+          <select id="refundStatusFilter" onchange="renderRefunds()">
+            <option value="">전체 상태</option>
+            <option value="요청">요청</option>
+            <option value="처리중">처리중</option>
+            <option value="환불완료">환불완료</option>
+            <option value="반려">반려</option>
+          </select>
+          <input id="refundSearch" placeholder="쇼핑몰/키워드/요청계정 검색">
+          <button class="btn btn-primary" onclick="renderRefunds()">검색</button>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h3>환불 요청 목록</h3>
+            <span style="font-size:13px;color:#6b7280" id="refundCount"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>요청일</th>
+                  <th>요청 계정</th>
+                  <th>쇼핑몰</th>
+                  <th>메인 키워드</th>
+                  <th>환불 수량</th>
+                  <th>사유</th>
+                  <th>상태</th>
+                  <th>관리자 메모</th>
+                  <th>관리</th>
+                </tr>
+              </thead>
+              <tbody id="refundRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <section id="members" class="page">
         <div class="notice" id="memberScopeNotice">현재 계정 권한에 따라 조회 가능한 회원만 표시됩니다.</div>
         <div class="toolbar">
@@ -470,6 +542,60 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
       </section>
     </main>
   </section>
+
+
+  <div id="refundRequestModal" class="modal hidden">
+    <div class="modal-card" style="width:min(620px,100%);">
+      <div class="modal-head">
+        <h3>환불 요청</h3>
+        <button class="close" onclick="closeRefundRequest()">×</button>
+      </div>
+      <input type="hidden" id="refundSlotId">
+      <div class="form-group">
+        <label>슬롯</label>
+        <input id="refundSlotLabel" disabled>
+      </div>
+      <div class="form-group">
+        <label>환불 수량</label>
+        <input id="refundQty" type="number" min="1" step="100" placeholder="환불 수량 입력">
+      </div>
+      <div class="form-group">
+        <label>환불 사유</label>
+        <textarea id="refundReason" rows="4" placeholder="환불 사유를 입력해 주세요."></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn btn-soft" onclick="closeRefundRequest()">취소</button>
+        <button class="btn btn-accent" onclick="submitRefundRequest()">환불 요청</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="refundAdminModal" class="modal hidden">
+    <div class="modal-card" style="width:min(620px,100%);">
+      <div class="modal-head">
+        <h3>환불 처리</h3>
+        <button class="close" onclick="closeRefundAdmin()">×</button>
+      </div>
+      <input type="hidden" id="refundAdminId">
+      <div class="form-group">
+        <label>상태</label>
+        <select id="refundAdminStatus">
+          <option value="요청">요청</option>
+          <option value="처리중">처리중</option>
+          <option value="환불완료">환불완료</option>
+          <option value="반려">반려</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>관리자 메모</label>
+        <textarea id="refundAdminMemo" rows="4" placeholder="처리 메모를 입력해 주세요."></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn btn-soft" onclick="closeRefundAdmin()">취소</button>
+        <button class="btn btn-accent" onclick="saveRefundAdmin()">저장</button>
+      </div>
+    </div>
+  </div>
 
   <div id="memberSignupModal" class="modal hidden">
     <div class="modal-card" style="width:min(620px,100%);">
@@ -618,6 +744,7 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
 <script>
 
 let supabaseClient = null;
+let refundRequests=[];
 
 function getSupabaseConfig(){
   return {
@@ -1024,13 +1151,15 @@ function showPage(id,btn){
   document.getElementById(id).classList.add('active');
   if(id==='register'){ populateRegisterAccountSelect(); applyPlanTypePermission(); }
   if(id==='audit') renderAudit();
+  if(id==='refunds') renderRefunds();
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-  const titleMap={dashboard:'대시보드',slots:'슬롯 관리',register:'슬롯 등록',members:'회원 관리',audit:'수정 이력',notice:'공지사항'};
+  const titleMap={dashboard:'대시보드',slots:'슬롯 관리',register:'슬롯 등록',refunds:'환불 관리',members:'회원 관리',audit:'수정 이력',notice:'공지사항'};
   document.getElementById('pageTitle').textContent=titleMap[id]||'';
   const subtitleMap={
     dashboard:'운영 현황을 한눈에 확인하세요.',
     slots:'등록된 슬롯과 구동 상태를 관리하세요.',
     register:'새로운 슬롯을 빠르게 등록하세요.',
+    refunds:'환불 요청과 처리 상태를 관리하세요.',
     members:'권한별 회원 계정을 관리하세요.',
     audit:'변경 이력을 확인하세요.',
     notice:'운영 공지사항을 확인하세요.'
@@ -1297,6 +1426,232 @@ async function changeSlotStatus(id, newStatus){
 function statusHtml(s){ return `<span class="status ${statusClass(s)}"><span class="dot"></span>${s}</span>`; }
 
 
+
+function refundStatusHtml(status){
+  const cls=status==='환불완료'?'refund-done':
+            status==='처리중'?'refund-processing':
+            status==='반려'?'refund-rejected':'refund-request';
+  return `<span class="refund-status ${cls}">${esc(status||'요청')}</span>`;
+}
+
+function canRequestRefund(){
+  if(currentUser?.role==='관리자') return true;
+  return getBusinessHoursStatus().isOpen;
+}
+
+function getSlotById(id){
+  return slots.find(s=>String(s.id)===String(id));
+}
+
+async function loadRefundRequests(){
+  if(!supabaseClient || !currentUser?.uuid){
+    refundRequests=[];
+    return;
+  }
+
+  const {data,error}=await supabaseClient
+    .from('refund_requests')
+    .select('*')
+    .order('created_at',{ascending:false});
+
+  if(error) throw error;
+
+  refundRequests=data||[];
+}
+
+async function renderRefunds(){
+  const rows=document.getElementById('refundRows');
+  if(!rows) return;
+
+  try{
+    await loadRefundRequests();
+  }catch(err){
+    console.error(err);
+    rows.innerHTML='<tr><td colspan="9">환불 요청을 불러오지 못했습니다.</td></tr>';
+    return;
+  }
+
+  const statusFilter=(document.getElementById('refundStatusFilter')?.value||'').trim();
+  const q=(document.getElementById('refundSearch')?.value||'').trim().toLowerCase();
+
+  const list=refundRequests.filter(r=>{
+    if(statusFilter && r.status!==statusFilter) return false;
+
+    const slot=getSlotById(r.slot_id);
+    const requester = r.requester_user_id===currentUser.uuid
+      ? currentUser.id
+      : (members.find(m=>m.uuid===r.requester_user_id)?.id || '');
+
+    const blob=[
+      slot?.mall||'',
+      slot?.keywords||'',
+      requester
+    ].join(' ').toLowerCase();
+
+    return !q || blob.includes(q);
+  });
+
+  document.getElementById('refundCount').textContent=`총 ${list.length}건`;
+
+  rows.innerHTML=list.map(r=>{
+    const slot=getSlotById(r.slot_id);
+    const requester = r.requester_user_id===currentUser.uuid
+      ? currentUser.id
+      : (members.find(m=>m.uuid===r.requester_user_id)?.id || '-');
+
+    const requestDate=new Date(r.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'});
+
+    return `
+      <tr>
+        <td>${esc(requestDate)}</td>
+        <td>${esc(requester)}</td>
+        <td>${esc(slot?.mall||'-')}</td>
+        <td>${esc(slot?.keywords||'-')}</td>
+        <td>${esc(r.quantity??'-')}</td>
+        <td style="max-width:260px;white-space:normal;">${esc(r.reason||'-')}</td>
+        <td>${refundStatusHtml(r.status)}</td>
+        <td style="max-width:240px;white-space:normal;">${esc(r.admin_memo||'')}</td>
+        <td>
+          ${currentUser?.role==='관리자'
+            ? `<button class="refund-btn" onclick="openRefundAdmin('${r.id}')">처리</button>`
+            : ''}
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function openRefundRequest(slotId){
+  const slot=getSlotById(slotId);
+  if(!slot) return;
+
+  if(!canRequestRefund()){
+    alert('현재는 환불 요청 가능 시간이 아닙니다.\n관리자에게 문의해주세요.');
+    return;
+  }
+
+  document.getElementById('refundSlotId').value=slot.id;
+  document.getElementById('refundSlotLabel').value=`${slot.mall} / ${slot.keywords}`;
+  document.getElementById('refundQty').value=slot.qty||100;
+  document.getElementById('refundQty').max=slot.qty||'';
+  document.getElementById('refundReason').value='';
+  document.getElementById('refundRequestModal').classList.add('show');
+}
+
+function closeRefundRequest(){
+  document.getElementById('refundRequestModal').classList.remove('show');
+}
+
+async function submitRefundRequest(){
+  const slotId=document.getElementById('refundSlotId').value;
+  const slot=getSlotById(slotId);
+  if(!slot) return;
+
+  if(!canRequestRefund()){
+    alert('현재는 환불 요청 가능 시간이 아닙니다.\n관리자에게 문의해주세요.');
+    return;
+  }
+
+  const qty=Number(document.getElementById('refundQty').value);
+  const reason=document.getElementById('refundReason').value.trim();
+
+  if(!Number.isInteger(qty) || qty<=0){
+    alert('환불 수량을 정확하게 입력해 주세요.');
+    return;
+  }
+
+  if(qty>Number(slot.qty||0)){
+    alert(`환불 수량은 현재 슬롯 수량(${slot.qty})을 초과할 수 없습니다.`);
+    return;
+  }
+
+  if(currentUser?.role!=='관리자' && qty%100!==0){
+    alert('환불 수량은 100단위로 입력해주세요');
+    return;
+  }
+
+  if(!reason){
+    alert('환불 사유를 입력해 주세요.');
+    return;
+  }
+
+  try{
+    const {error}=await supabaseClient
+      .from('refund_requests')
+      .insert({
+        slot_id:slot.id,
+        requester_user_id:currentUser.uuid,
+        quantity:qty,
+        reason,
+        status:'요청'
+      });
+
+    if(error) throw error;
+
+    addAudit('환불 요청',slot.mall,`환불 수량 ${qty} / 사유: ${reason}`,slot.id);
+    closeRefundRequest();
+    await renderRefunds();
+    alert('환불 요청이 접수되었습니다.');
+    showPage('refunds',document.querySelector('.nav button[data-page="refunds"]'));
+  }catch(err){
+    console.error(err);
+    alert(friendlySupabaseError(err));
+  }
+}
+
+function openRefundAdmin(refundId){
+  if(currentUser?.role!=='관리자') return;
+
+  const r=refundRequests.find(x=>String(x.id)===String(refundId));
+  if(!r) return;
+
+  document.getElementById('refundAdminId').value=r.id;
+  document.getElementById('refundAdminStatus').value=r.status||'요청';
+  document.getElementById('refundAdminMemo').value=r.admin_memo||'';
+  document.getElementById('refundAdminModal').classList.add('show');
+}
+
+function closeRefundAdmin(){
+  document.getElementById('refundAdminModal').classList.remove('show');
+}
+
+async function saveRefundAdmin(){
+  if(currentUser?.role!=='관리자') return;
+
+  const id=document.getElementById('refundAdminId').value;
+  const r=refundRequests.find(x=>String(x.id)===String(id));
+  if(!r) return;
+
+  const nextStatus=document.getElementById('refundAdminStatus').value;
+  const memo=document.getElementById('refundAdminMemo').value.trim();
+
+  try{
+    const {error}=await supabaseClient
+      .from('refund_requests')
+      .update({
+        status:nextStatus,
+        admin_memo:memo||null
+      })
+      .eq('id',id);
+
+    if(error) throw error;
+
+    const slot=getSlotById(r.slot_id);
+    addAudit(
+      '환불 처리',
+      slot?.mall||'환불 요청',
+      `상태 ${r.status||'-'} → ${nextStatus}로 변경${memo?` / 메모: ${memo}`:''}`,
+      r.slot_id
+    );
+
+    closeRefundAdmin();
+    await renderRefunds();
+    alert('환불 처리 상태가 저장되었습니다.');
+  }catch(err){
+    console.error(err);
+    alert(friendlySupabaseError(err));
+  }
+}
+
 function getVisibleSlots(){
   if(!currentUser) return [];
 
@@ -1396,6 +1751,7 @@ function renderSlots(){
       <td>${x.owner}</td>
       <td class="row-actions">
         ${editActionHtml(x)}
+        <button class="refund-btn" onclick="openRefundRequest('${x.id}')">환불</button>
         ${currentUser?.role==='관리자' ? `<button onclick="stopSlot('${x.id}')">중지</button>` : ''}
         <button class="delete-btn" onclick="deleteSlot('${x.id}')">삭제</button>
       </td>
