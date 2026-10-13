@@ -1534,11 +1534,11 @@ function openRefundRequest(slotId){
   document.getElementById('refundQty').value=slot.qty||100;
   document.getElementById('refundQty').max=slot.qty||'';
   document.getElementById('refundReason').value='';
-  document.getElementById('refundRequestModal').classList.add('show');
+  document.getElementById('refundRequestModal').classList.remove('hidden');
 }
 
 function closeRefundRequest(){
-  document.getElementById('refundRequestModal').classList.remove('show');
+  document.getElementById('refundRequestModal').classList.add('hidden');
 }
 
 async function submitRefundRequest(){
@@ -1607,11 +1607,11 @@ function openRefundAdmin(refundId){
   document.getElementById('refundAdminId').value=r.id;
   document.getElementById('refundAdminStatus').value=r.status||'요청';
   document.getElementById('refundAdminMemo').value=r.admin_memo||'';
-  document.getElementById('refundAdminModal').classList.add('show');
+  document.getElementById('refundAdminModal').classList.remove('hidden');
 }
 
 function closeRefundAdmin(){
-  document.getElementById('refundAdminModal').classList.remove('show');
+  document.getElementById('refundAdminModal').classList.add('hidden');
 }
 
 async function saveRefundAdmin(){
