@@ -268,6 +268,37 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
 @media(max-width:1100px){.filter-grid{grid-template-columns:repeat(2,minmax(150px,1fr))}}
 @media(max-width:720px){.filter-grid{grid-template-columns:1fr}}
 
+
+/* 슬롯 목록 우측 정리 */
+#slots .section-head{
+  align-items:center;
+  min-height:58px;
+}
+#slots .section-head .export-actions{
+  margin-left:auto;
+}
+#slots table{
+  width:100%;
+  table-layout:auto;
+}
+#slots th.manage-col,
+#slots td.manage-col-cell{
+  min-width:190px;
+  text-align:center;
+}
+#slots td.manage-col-cell{
+  white-space:nowrap;
+}
+#slots td.manage-col-cell button{
+  margin:2px 2px;
+}
+#slots th:nth-last-child(2),
+#slots td:nth-last-child(2){
+  min-width:88px;
+  text-align:center;
+  white-space:nowrap;
+}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -324,6 +355,7 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
 
         <div class="nav-title">SYSTEM</div>
         <button class="admin-only" data-page="audit" onclick="showPage('audit',this)">수정 이력</button>
+        <button class="admin-only" id="accountSettingsNav" data-page="accountSettings" onclick="showPage('accountSettings',this)">계정 설정</button>
         <button data-page="notice" onclick="showPage('notice',this)">공지사항</button>
 
         <div class="sidebar-account">
@@ -426,13 +458,19 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
             <div class="filter-actions">
               <button class="btn btn-primary" onclick="renderSlots()">검색</button>
               <button class="btn btn-soft" onclick="resetSlotFilters()">초기화</button>
-              <button class="btn btn-soft" onclick="exportSlotsExcel(true)">현재 검색결과 엑셀</button>
-              <button class="btn btn-soft" onclick="exportSlotsExcel(false)">전체 슬롯 엑셀</button>
+
             </div>
           </div>
         </div>
         <div class="card">
-          <div class="section-head"><h3>슬롯 목록</h3><span style="font-size:13px;color:#6b7280" id="slotCount"></span></div>
+          <div class="section-head">
+            <h3>슬롯 목록</h3>
+            <div class="export-actions">
+              <span style="font-size:13px;color:#6b7280" id="slotCount"></span>
+              <button class="btn btn-soft" onclick="exportSlotsExcel(true)">검색결과 엑셀</button>
+              <button class="btn btn-soft" onclick="exportSlotsExcel(false)">전체 슬롯 엑셀</button>
+            </div>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -609,6 +647,35 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
             <thead><tr><th>일시</th><th>계정</th><th>작업</th><th>대상</th><th>내용</th></tr></thead>
             <tbody id="auditRows"></tbody>
           </table></div>
+        </div>
+      </section>
+
+
+      <section id="accountSettings" class="page">
+        <div class="card" style="max-width:720px;">
+          <div class="section-head">
+            <h3>관리자 계정 설정</h3>
+          </div>
+          <div style="padding:20px;">
+            <div class="form-group">
+              <label>로그인 ID</label>
+              <input value="admin" disabled>
+            </div>
+            <div class="form-group">
+              <label>새 비밀번호</label>
+              <input id="adminNewPassword" type="password" autocomplete="new-password" placeholder="6자 이상 입력">
+            </div>
+            <div class="form-group">
+              <label>새 비밀번호 확인</label>
+              <input id="adminNewPasswordConfirm" type="password" autocomplete="new-password" placeholder="새 비밀번호 다시 입력">
+            </div>
+            <div class="actions" style="justify-content:flex-start;">
+              <button class="btn btn-accent" onclick="changeAdminPassword()">비밀번호 변경</button>
+            </div>
+            <div style="margin-top:14px;font-size:12px;color:#667085;line-height:1.6;">
+              변경 즉시 Supabase 관리자 계정의 실제 로그인 비밀번호가 바뀝니다.
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1174,7 +1241,9 @@ function persist(){
 
 async function login(){
   const loginValue=document.getElementById('loginId').value.trim();
-  const email=loginValue.includes('@') ? loginValue : `${loginValue}@rewardops.local`;
+  const email = loginValue.toLowerCase()==='admin'
+      ? 'itop456@naver.com'
+      : (loginValue.includes('@') ? loginValue : `${loginValue}@rewardops.local`);
   const pw=document.getElementById('loginPw').value;
 
   if(!supabaseClient && !initSupabaseClient()){
@@ -1219,6 +1288,45 @@ async function logout(){
   showPage('dashboard', document.querySelector('.nav button[data-page="dashboard"]'));
 }
 
+
+function applyAdminAccountSettingsVisibility(){
+  const nav=document.getElementById('accountSettingsNav');
+  if(nav) nav.style.display=currentUser?.role==='관리자' ? '' : 'none';
+}
+
+async function changeAdminPassword(){
+  if(currentUser?.role!=='관리자'){
+    alert('관리자만 사용할 수 있습니다.');
+    return;
+  }
+
+  const pw=document.getElementById('adminNewPassword')?.value||'';
+  const pw2=document.getElementById('adminNewPasswordConfirm')?.value||'';
+
+  if(pw.length<6){
+    alert('새 비밀번호는 6자 이상 입력해주세요.');
+    return;
+  }
+
+  if(pw!==pw2){
+    alert('새 비밀번호가 서로 일치하지 않습니다.');
+    return;
+  }
+
+  try{
+    const {data,error}=await supabaseClient.auth.updateUser({password:pw});
+    if(error) throw error;
+
+    addAudit('관리자 비밀번호 변경','admin','관리자 로그인 비밀번호를 변경했습니다.');
+    document.getElementById('adminNewPassword').value='';
+    document.getElementById('adminNewPasswordConfirm').value='';
+    alert('비밀번호가 변경되었습니다. 다음 로그인부터 새 비밀번호를 사용해주세요.');
+  }catch(err){
+    console.error(err);
+    alert(friendlySupabaseError(err));
+  }
+}
+
 function showPage(id,btn){
   // 관리자 외 계정은 마감 이후 어떤 경로로도 슬롯 등록 화면에 진입할 수 없습니다.
   if(id==='register' && currentUser?.role!=='관리자' && !getBusinessHoursStatus().isOpen){
@@ -1236,7 +1344,7 @@ function showPage(id,btn){
   if(id==='audit') renderAudit();
   if(id==='refunds') renderRefunds();
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-  const titleMap={dashboard:'대시보드',slots:'슬롯 관리',register:'슬롯 등록',refunds:'환불 관리',members:'회원 관리',audit:'수정 이력',notice:'공지사항'};
+  const titleMap={dashboard:'대시보드',slots:'슬롯 관리',register:'슬롯 등록',refunds:'환불 관리',members:'회원 관리',audit:'수정 이력',notice:'공지사항',accountSettings:'계정 설정'};
   document.getElementById('pageTitle').textContent=titleMap[id]||'';
   const subtitleMap={
     dashboard:'운영 현황을 한눈에 확인하세요.',
@@ -1245,7 +1353,8 @@ function showPage(id,btn){
     refunds:'환불 요청과 처리 상태를 관리하세요.',
     members:'권한별 회원 계정을 관리하세요.',
     audit:'변경 이력을 확인하세요.',
-    notice:'운영 공지사항을 확인하세요.'
+    notice:'운영 공지사항을 확인하세요.',
+    accountSettings:'관리자 로그인 계정을 관리하세요.'
   };
   const sub=document.getElementById('pageSubtitle');
   if(sub) sub.textContent=subtitleMap[id]||'';
@@ -2013,7 +2122,7 @@ function renderSlots(){
       <td>${x.start}</td>
       <td>${endDateHtml(x.end)}</td>
       <td>${x.owner}</td>
-      <td class="row-actions">
+      <td class="row-actions manage-col-cell">
         ${editActionHtml(x)}
         <button class="refund-btn" onclick="openRefundRequest('${x.id}')">환불</button>
         ${currentUser?.role==='관리자' ? `<button onclick="stopSlot('${x.id}')">중지</button>` : ''}
@@ -2022,6 +2131,7 @@ function renderSlots(){
     </tr>`).join('');
   renderDashboard();
   applyBusinessHoursUI();
+  applyAdminAccountSettingsVisibility();
 }
 
 async function renderDashboard(){
@@ -2838,7 +2948,7 @@ function renderMembers(){
       <td><span class="member-badge">${m.role}</span></td>
       <td>${m.createdBy || '-'}</td>
       <td>${m.status}</td>
-      <td class="row-actions">
+      <td class="row-actions manage-col-cell">
         ${currentUser?.role==='관리자'
           ? `<button onclick="openMemberEdit('${m.id}')">수정</button>`
           : ''}
