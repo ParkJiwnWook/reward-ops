@@ -299,11 +299,18 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
   white-space:nowrap;
 }
 
+
+/* 기존 로그인 세션 확인 전 화면 깜빡임 방지 */
+body.auth-pending #loginScreen,
+body.auth-pending #mainScreen{
+  visibility:hidden !important;
+}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
-<body>
+<body class="auth-pending">
 <div class="app">
 
   <section id="loginScreen" class="login-wrap">
@@ -1167,16 +1174,32 @@ async function enterMainScreenFromSupabaseUser(user){
 }
 
 async function restoreSupabaseSession(){
-  if(!initSupabaseClient()) return;
+  const body=document.body;
 
   try{
+    if(!initSupabaseClient()){
+      document.getElementById('mainScreen')?.classList.add('hidden');
+      document.getElementById('loginScreen')?.classList.remove('hidden');
+      return;
+    }
+
     const {data,error}=await supabaseClient.auth.getSession();
     if(error) throw error;
+
     if(data?.session?.user){
       await enterMainScreenFromSupabaseUser(data.session.user);
+    }else{
+      currentUser=null;
+      document.getElementById('mainScreen')?.classList.add('hidden');
+      document.getElementById('loginScreen')?.classList.remove('hidden');
     }
   }catch(err){
-    console.error(err);
+    console.error('세션 복원 실패:',err);
+    currentUser=null;
+    document.getElementById('mainScreen')?.classList.add('hidden');
+    document.getElementById('loginScreen')?.classList.remove('hidden');
+  }finally{
+    body?.classList.remove('auth-pending');
   }
 }
 
@@ -1283,6 +1306,7 @@ async function logout(){
     console.error(err);
   }
   currentUser=null;
+  document.body.classList.remove('auth-pending');
   document.getElementById('mainScreen').classList.add('hidden');
   document.getElementById('loginScreen').classList.remove('hidden');
   showPage('dashboard', document.querySelector('.nav button[data-page="dashboard"]'));
