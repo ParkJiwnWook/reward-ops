@@ -245,8 +245,32 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
 }
 .refund-btn:hover{background:#f8fafc}
 
+
+.filter-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(150px,1fr));
+  gap:10px;
+  width:100%;
+}
+.filter-grid .filter-actions{
+  display:flex;
+  gap:8px;
+  align-items:end;
+  flex-wrap:wrap;
+  grid-column:1/-1;
+}
+.filter-grid label{
+  margin:0 0 5px;
+  font-size:11px;
+  color:#667085;
+}
+.export-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+@media(max-width:1100px){.filter-grid{grid-template-columns:repeat(2,minmax(150px,1fr))}}
+@media(max-width:720px){.filter-grid{grid-template-columns:1fr}}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="app">
@@ -355,13 +379,57 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
         <div class="notice" id="slotScopeNotice">현재 계정 권한에 따라 조회 가능한 슬롯만 표시됩니다.</div>
 
         <div class="toolbar">
-          <input id="searchMall" placeholder="쇼핑몰명">
-          <input id="searchKeyword" placeholder="키워드 검색">
-          <select id="searchStatus">
-            <option value="">전체 상태</option>
-            <option>구동중</option><option>시작예정</option><option>종료예정</option><option>종료</option><option>중지</option>
-          </select>
-          <button class="btn btn-primary" onclick="renderSlots()">검색</button>
+          <div class="filter-grid">
+            <div>
+              <label>쇼핑몰명</label>
+              <input id="searchMall" placeholder="쇼핑몰명 검색" onkeydown="if(event.key==='Enter')renderSlots()">
+            </div>
+            <div>
+              <label>메인/구간 키워드</label>
+              <input id="searchKeyword" placeholder="키워드 검색" onkeydown="if(event.key==='Enter')renderSlots()">
+            </div>
+            <div>
+              <label>계정명</label>
+              <input id="searchOwner" placeholder="등록 계정 검색" onkeydown="if(event.key==='Enter')renderSlots()">
+            </div>
+            <div>
+              <label>매체사</label>
+              <select id="searchMedia">
+                <option value="">전체 매체사</option>
+                <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+              </select>
+            </div>
+            <div>
+              <label>승인 상태</label>
+              <select id="searchApproval">
+                <option value="">전체 승인상태</option>
+                <option value="승인대기">승인대기</option>
+                <option value="승인완료">승인완료</option>
+                <option value="반려">반려</option>
+              </select>
+            </div>
+            <div>
+              <label>구동 상태</label>
+              <select id="searchStatus">
+                <option value="">전체 구동상태</option>
+                <option>구동중</option><option>시작예정</option><option>종료예정</option><option>종료</option><option>중지</option>
+              </select>
+            </div>
+            <div>
+              <label>시작일</label>
+              <input id="searchStartDate" type="date">
+            </div>
+            <div>
+              <label>종료일</label>
+              <input id="searchEndDate" type="date">
+            </div>
+            <div class="filter-actions">
+              <button class="btn btn-primary" onclick="renderSlots()">검색</button>
+              <button class="btn btn-soft" onclick="resetSlotFilters()">초기화</button>
+              <button class="btn btn-soft" onclick="exportSlotsExcel(true)">현재 검색결과 엑셀</button>
+              <button class="btn btn-soft" onclick="exportSlotsExcel(false)">전체 슬롯 엑셀</button>
+            </div>
+          </div>
         </div>
         <div class="card">
           <div class="section-head"><h3>슬롯 목록</h3><span style="font-size:13px;color:#6b7280" id="slotCount"></span></div>
@@ -474,7 +542,10 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
         <div class="card">
           <div class="section-head">
             <h3>환불 요청 목록</h3>
-            <span style="font-size:13px;color:#6b7280" id="refundCount"></span>
+            <div class="export-actions">
+              <span style="font-size:13px;color:#6b7280" id="refundCount"></span>
+              <button class="btn btn-soft" onclick="exportRefundsExcel()">환불 내역 엑셀</button>
+            </div>
           </div>
           <div class="table-wrap">
             <table>
@@ -509,7 +580,13 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
           <button id="memberSignupBtn" class="btn btn-accent" onclick="openMemberSignup()">+ 회원가입하기</button>
         </div>
         <div class="card">
-          <div class="section-head"><h3>회원 목록</h3><span style="font-size:13px;color:#6b7280" id="memberCount"></span></div>
+          <div class="section-head">
+            <h3>회원 목록</h3>
+            <div class="export-actions">
+              <span style="font-size:13px;color:#6b7280" id="memberCount"></span>
+              <button class="btn btn-soft" onclick="exportMembersExcel()">회원 목록 엑셀</button>
+            </div>
+          </div>
           <div class="table-wrap">
             <table>
               <thead><tr><th>아이디</th><th>비밀번호</th><th>가입유형</th><th>생성 계정</th><th>상태</th><th>관리</th></tr></thead>
@@ -521,7 +598,13 @@ input:disabled,select:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allow
 
       <section id="audit" class="page admin-only">
         <div class="card">
-          <div class="section-head"><h3>수정 이력</h3><span style="font-size:13px;color:#6b7280" id="auditCount"></span></div>
+          <div class="section-head">
+            <h3>수정 이력</h3>
+            <div class="export-actions">
+              <span style="font-size:13px;color:#6b7280" id="auditCount"></span>
+              <button class="btn btn-soft" onclick="exportAuditExcel()">수정이력 엑셀</button>
+            </div>
+          </div>
           <div class="table-wrap"><table>
             <thead><tr><th>일시</th><th>계정</th><th>작업</th><th>대상</th><th>내용</th></tr></thead>
             <tbody id="auditRows"></tbody>
@@ -1711,17 +1794,198 @@ function editActionHtml(slot, dashboard=false){
   return currentUser?.role==='관리자' ? '' : '<span class="edit-locked" title="승인 완료 이후에는 관리자만 수정할 수 있습니다.">수정불가</span>';
 }
 
-function renderSlots(){
-  syncAutomaticStatuses();
-  const mall=(document.getElementById('searchMall')?.value||'').toLowerCase();
-  const kw=(document.getElementById('searchKeyword')?.value||'').toLowerCase();
-  const st=(document.getElementById('searchStatus')?.value||'');
-  const visibleSlots=getVisibleSlots();
-  const filtered=visibleSlots.filter(x=>
-    x.mall.toLowerCase().includes(mall) &&
-    [x.keywords, x.keyword40, x.keyword15].some(v=>String(v||'').toLowerCase().includes(kw)) &&
-    (!st || x.status===st)
+
+function safeExcelName(name){
+  return String(name||'다운로드').replace(/[\\/:*?"<>|]/g,'_').slice(0,31);
+}
+
+function excelDownload(rows, filename, sheetName){
+  if(!rows || !rows.length){
+    alert('다운로드할 데이터가 없습니다.');
+    return;
+  }
+
+  if(typeof XLSX==='undefined'){
+    // CDN 장애 시 CSV로라도 다운로드
+    const headers=Object.keys(rows[0]);
+    const csv=[
+      headers.join(','),
+      ...rows.map(r=>headers.map(h=>{
+        const v=String(r[h]??'').replace(/"/g,'""');
+        return `"${v}"`;
+      }).join(','))
+    ].join('\r\n');
+
+    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=filename.replace(/\.xlsx$/i,'.csv');
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(a.href);
+    a.remove();
+    return;
+  }
+
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,safeExcelName(sheetName));
+  XLSX.writeFile(wb,filename);
+}
+
+function todayKSTForFile(){
+  return new Intl.DateTimeFormat('sv-SE',{
+    timeZone:'Asia/Seoul',
+    year:'numeric',month:'2-digit',day:'2-digit'
+  }).format(new Date());
+}
+
+function exportSlotsExcel(filteredOnly=true){
+  const list=filteredOnly ? getFilteredSlots() : getVisibleSlots();
+
+  const rows=list.map((x,i)=>({
+    'No':i+1,
+    '승인상태':x.approval||'',
+    '구동상태':x.status||'',
+    '쇼핑몰':x.mall||'',
+    '상품링크':x.link||'',
+    '원부링크':x.originalLink||'',
+    '메인 키워드':x.keywords||'',
+    '40위 이내 키워드':x.keyword40||'',
+    '15위 이내 키워드':x.keyword15||'',
+    '매체사':x.mediaCompany||'',
+    '진행유형':x.planType||'',
+    '수량':Number(x.qty||0),
+    '시작일':x.start||'',
+    '종료일':x.end||'',
+    '등록계정':x.owner||'',
+    '메모':x.memo||''
+  }));
+
+  const tag=filteredOnly?'검색결과':'전체';
+  excelDownload(rows,`REWARD_OPS_슬롯_${tag}_${todayKSTForFile()}.xlsx`,'슬롯');
+}
+
+function exportMembersExcel(){
+  const q=(document.getElementById('memberSearch')?.value||'').toLowerCase();
+  const role=(document.getElementById('memberRoleFilter')?.value||'');
+  const list=getVisibleMembers().filter(m=>
+    String(m.id||'').toLowerCase().includes(q) &&
+    (!role || m.role===role)
   );
+
+  const rows=list.map((m,i)=>({
+    'No':i+1,
+    '아이디':m.id||'',
+    '가입유형':m.role||'',
+    '생성 계정':m.createdBy||'',
+    '상태':m.status||''
+  }));
+
+  excelDownload(rows,`REWARD_OPS_회원목록_${todayKSTForFile()}.xlsx`,'회원');
+}
+
+async function exportRefundsExcel(){
+  try{
+    await loadRefundRequests();
+  }catch(err){
+    console.error(err);
+    alert('환불 내역을 불러오지 못했습니다.');
+    return;
+  }
+
+  const statusFilter=(document.getElementById('refundStatusFilter')?.value||'').trim();
+  const q=(document.getElementById('refundSearch')?.value||'').trim().toLowerCase();
+
+  const list=refundRequests.filter(r=>{
+    if(statusFilter && r.status!==statusFilter) return false;
+
+    const slot=getSlotById(r.slot_id);
+    const requester = r.requester_user_id===currentUser.uuid
+      ? currentUser.id
+      : (members.find(m=>m.uuid===r.requester_user_id)?.id || '');
+
+    const blob=[slot?.mall||'',slot?.keywords||'',requester].join(' ').toLowerCase();
+    return !q || blob.includes(q);
+  });
+
+  const rows=list.map((r,i)=>{
+    const slot=getSlotById(r.slot_id);
+    const requester = r.requester_user_id===currentUser.uuid
+      ? currentUser.id
+      : (members.find(m=>m.uuid===r.requester_user_id)?.id || '');
+
+    return {
+      'No':i+1,
+      '요청일':r.created_at ? new Date(r.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}) : '',
+      '요청계정':requester,
+      '쇼핑몰':slot?.mall||'',
+      '메인 키워드':slot?.keywords||'',
+      '환불수량':Number(r.quantity||0),
+      '사유':r.reason||'',
+      '상태':r.status||'',
+      '관리자 메모':r.admin_memo||''
+    };
+  });
+
+  excelDownload(rows,`REWARD_OPS_환불내역_${todayKSTForFile()}.xlsx`,'환불');
+}
+
+async function exportAuditExcel(){
+  try{
+    await loadAuditLogs();
+  }catch(err){
+    console.error(err);
+    alert('수정 이력을 불러오지 못했습니다.');
+    return;
+  }
+
+  const rows=auditLogs.map((log,i)=>({
+    'No':i+1,
+    '일시':log.time||'',
+    '계정':log.account||'',
+    '작업':log.action||'',
+    '대상':log.target||'',
+    '내용':log.detail||''
+  }));
+
+  excelDownload(rows,`REWARD_OPS_수정이력_${todayKSTForFile()}.xlsx`,'수정이력');
+}
+
+function getFilteredSlots(){
+  syncAutomaticStatuses();
+  const mall=(document.getElementById('searchMall')?.value||'').trim().toLowerCase();
+  const kw=(document.getElementById('searchKeyword')?.value||'').trim().toLowerCase();
+  const owner=(document.getElementById('searchOwner')?.value||'').trim().toLowerCase();
+  const media=(document.getElementById('searchMedia')?.value||'');
+  const approval=(document.getElementById('searchApproval')?.value||'');
+  const status=(document.getElementById('searchStatus')?.value||'');
+  const startDate=(document.getElementById('searchStartDate')?.value||'');
+  const endDate=(document.getElementById('searchEndDate')?.value||'');
+
+  return getVisibleSlots().filter(x=>
+    String(x.mall||'').toLowerCase().includes(mall) &&
+    [x.keywords,x.keyword40,x.keyword15].some(v=>String(v||'').toLowerCase().includes(kw)) &&
+    String(x.owner||'').toLowerCase().includes(owner) &&
+    (!media || x.mediaCompany===media) &&
+    (!approval || x.approval===approval) &&
+    (!status || x.status===status) &&
+    (!startDate || x.start===startDate) &&
+    (!endDate || x.end===endDate)
+  );
+}
+
+function resetSlotFilters(){
+  ['searchMall','searchKeyword','searchOwner','searchMedia','searchApproval','searchStatus','searchStartDate','searchEndDate']
+    .forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.value='';
+    });
+  renderSlots();
+}
+
+function renderSlots(){
+  const filtered=getFilteredSlots();
   const scopeNotice=document.getElementById('slotScopeNotice');
   if(scopeNotice) scopeNotice.textContent=getSlotScopeText();
   document.getElementById('slotCount').textContent=`총 ${filtered.length}개`;
